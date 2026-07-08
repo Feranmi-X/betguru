@@ -1,0 +1,2450 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bet Guru — VIP Access</title>
+
+    <!-- Fonts: Fraunces (display, ledger/plaque feel), Inter (body), IBM Plex Mono (numbers/odds) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,ital@9..144,300..900,0..1&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ink: "#0A0F0C",
+              pine: "#122A20",
+              pinelight: "#183627",
+              gold: "#C9A227",
+              goldbright: "#E7C15A",
+            },
+            fontFamily: {
+              display: ['"Fraunces"', "serif"],
+              body: ['"Inter"', "sans-serif"],
+              mono: ['"IBM Plex Mono"', "monospace"],
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      :root {
+        --ink: #0a0f0c;
+        --pine: #122a20;
+        --pine-light: #183627;
+        --gold: #c9a227;
+        --gold-bright: #e7c15a;
+        --parchment: #efe8d8;
+        --sage: #7c9a82;
+        --crimson: #b2402f;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      html.light {
+        --ink: #f5f1e6;
+        --pine: #ffffff;
+        --pine-light: #efe8d8;
+        --parchment: #1b2620;
+      }
+      body {
+        background-color: var(--ink);
+        background-image:
+          radial-gradient(
+            circle at 15% 10%,
+            rgba(201, 162, 39, 0.06),
+            transparent 40%
+          ),
+          radial-gradient(
+            circle at 85% 90%,
+            rgba(124, 154, 130, 0.06),
+            transparent 45%
+          );
+        color: var(--parchment);
+        font-family: "Inter", sans-serif;
+        transition:
+          background-color 0.2s ease,
+          color 0.2s ease;
+      }
+      html.light body {
+        background-image:
+          radial-gradient(
+            circle at 15% 10%,
+            rgba(201, 162, 39, 0.08),
+            transparent 40%
+          ),
+          radial-gradient(
+            circle at 85% 90%,
+            rgba(124, 154, 130, 0.1),
+            transparent 45%
+          );
+      }
+      .font-display {
+        font-family: "Fraunces", serif;
+        font-feature-settings: "ss01";
+      }
+      .font-mono-num {
+        font-family: "IBM Plex Mono", monospace;
+      }
+
+      .hairline {
+        border-color: rgba(239, 232, 216, 0.14);
+      }
+      html.light .hairline {
+        border-color: rgba(27, 38, 32, 0.14);
+      }
+
+      /* Overrides so Tailwind's baked-in dark-theme utility colors adapt in light mode */
+      html.light .bg-ink\/80 {
+        background-color: rgba(245, 241, 230, 0.85) !important;
+      }
+      html.light .bg-ink\/70 {
+        background-color: rgba(245, 241, 230, 0.75) !important;
+      }
+      html.light .bg-pine\/40 {
+        background-color: rgba(27, 38, 32, 0.05) !important;
+      }
+      html.light .bg-pinelight {
+        background-color: #efe8d8 !important;
+        color: #1b2620;
+      }
+      html.light .text-parchment\/70 {
+        color: rgba(27, 38, 32, 0.7) !important;
+      }
+      html.light .text-parchment\/60 {
+        color: rgba(27, 38, 32, 0.6) !important;
+      }
+      html.light .text-parchment\/50 {
+        color: rgba(27, 38, 32, 0.5) !important;
+      }
+      html.light .text-parchment\/40 {
+        color: rgba(27, 38, 32, 0.4) !important;
+      }
+      html.light .text-parchment\/30 {
+        color: rgba(27, 38, 32, 0.3) !important;
+      }
+      html.light .input-field {
+        background: rgba(27, 38, 32, 0.04);
+        border-color: rgba(27, 38, 32, 0.18);
+        color: #1b2620;
+      }
+      html.light .input-field option {
+        color: #1b2620;
+      }
+      html.light .pay-tile {
+        border-color: rgba(27, 38, 32, 0.16);
+        background: rgba(27, 38, 32, 0.03);
+      }
+      html.light .pay-tile.selected,
+      html.light .pay-tile:hover {
+        background: rgba(201, 162, 39, 0.1);
+      }
+      html.light .odds-glow {
+        text-shadow: 0 0 18px rgba(201, 162, 39, 0.25);
+      }
+
+      /* Theme toggle button */
+      .theme-toggle {
+        position: relative;
+        width: 38px;
+        height: 38px;
+        border-radius: 9999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .theme-toggle svg {
+        width: 18px;
+        height: 18px;
+      }
+      .icon-sun {
+        display: none;
+      }
+      html.light .icon-moon {
+        display: none;
+      }
+      html.light .icon-sun {
+        display: block;
+      }
+
+      /* Ticket / betting-slip card with punch-hole notches */
+      .ticket {
+        position: relative;
+        background: linear-gradient(180deg, #fbf7ec 0%, #f1e9d3 100%);
+        color: #1b1a14;
+        border-radius: 4px;
+      }
+      .ticket::before,
+      .ticket::after {
+        content: "";
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        background: var(--ink);
+        border-radius: 50%;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+      .ticket::before {
+        left: -11px;
+      }
+      .ticket::after {
+        right: -11px;
+      }
+      .ticket-perf {
+        border-top: 2px dashed rgba(27, 26, 20, 0.25);
+      }
+      .stamp {
+        font-family: "IBM Plex Mono", monospace;
+        letter-spacing: 0.18em;
+        transform: rotate(-8deg);
+        border: 2px solid var(--crimson);
+        color: var(--crimson);
+      }
+
+      .odds-glow {
+        text-shadow: 0 0 24px rgba(201, 162, 39, 0.35);
+      }
+
+      .btn-gold {
+        background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+        color: #1b1a14;
+      }
+      .btn-gold:hover {
+        filter: brightness(1.06);
+      }
+
+      .input-field {
+        background: rgba(239, 232, 216, 0.05);
+        border: 1px solid rgba(239, 232, 216, 0.18);
+        color: var(--parchment);
+      }
+      .input-field:focus {
+        outline: none;
+        border-color: var(--gold);
+        box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.18);
+      }
+      .input-field option {
+        color: #1b1a14;
+      }
+
+      .pay-tile {
+        border: 1px solid rgba(239, 232, 216, 0.16);
+        background: rgba(239, 232, 216, 0.03);
+        transition: all 0.15s ease;
+      }
+      .pay-tile.selected,
+      .pay-tile:hover {
+        border-color: var(--gold);
+        background: rgba(201, 162, 39, 0.08);
+      }
+
+      .fade-screen {
+        animation: fadeIn 0.35s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      ::selection {
+        background: var(--gold);
+        color: #1b1a14;
+      }
+
+      .scrollbar-none::-webkit-scrollbar {
+        display: none;
+      }
+
+      /* Platform badge (clickable) */
+      .platform-badge {
+        cursor: pointer;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        padding: 4px 10px;
+        transition: all 0.15s ease;
+        background: transparent;
+      }
+      .platform-badge:hover,
+      .platform-badge:focus-visible {
+        border-color: var(--gold);
+        color: var(--gold-bright) !important;
+        outline: none;
+      }
+
+      /* Mobile nav drawer */
+      #mobileNav {
+        transition:
+          max-height 0.25s ease,
+          opacity 0.2s ease;
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+      }
+      #mobileNav.open {
+        max-height: 480px;
+        opacity: 1;
+      }
+      .hamburger-line {
+        display: block;
+        width: 20px;
+        height: 2px;
+        background: currentColor;
+        margin: 4px 0;
+        transition: all 0.2s ease;
+      }
+      #hamburgerBtn.open .line-1 {
+        transform: translateY(6px) rotate(45deg);
+      }
+      #hamburgerBtn.open .line-2 {
+        opacity: 0;
+      }
+      #hamburgerBtn.open .line-3 {
+        transform: translateY(-6px) rotate(-45deg);
+      }
+    </style>
+  </head>
+
+  <body class="min-h-screen">
+    <!-- ============================================================ -->
+    <!-- NAV -->
+    <!-- ============================================================ -->
+    <header class="sticky top-0 z-40 backdrop-blur bg-ink/80 border-b hairline">
+      <div
+        class="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between"
+      >
+        <a
+          href="#"
+          onclick="showScreen('landing')"
+          class="flex items-baseline gap-2 min-w-0"
+        >
+          <span
+            class="font-display text-xl sm:text-2xl md:text-3xl tracking-tight shrink-0"
+            style="color: var(--gold-bright)"
+            >Bet Guru</span
+          >
+          <span
+            class="hidden md:inline font-mono-num text-[10px] tracking-[0.3em] uppercase truncate"
+            style="color: var(--sage)"
+            >Members Only</span
+          >
+        </a>
+
+        <!-- Desktop nav links -->
+        <nav
+          class="hidden lg:flex items-center gap-6 font-mono-num text-[11px] tracking-[0.15em] uppercase text-parchment/60"
+        >
+          <a
+            href="#"
+            onclick="
+              showScreen('landing');
+              return false;
+            "
+            class="hover:text-[var(--gold-bright)] transition"
+            >Home</a
+          >
+          <a
+            href="#how-it-works"
+            onclick="showScreen('landing')"
+            class="hover:text-[var(--gold-bright)] transition"
+            >How It Works</a
+          >
+          <a
+            href="#tiers"
+            onclick="showScreen('landing')"
+            class="hover:text-[var(--gold-bright)] transition"
+            >Prices</a
+          >
+          <a
+            href="#testimonials"
+            onclick="showScreen('landing')"
+            class="hover:text-[var(--gold-bright)] transition"
+            >Testimonies</a
+          >
+          <a
+            href="#faq"
+            onclick="showScreen('landing')"
+            class="hover:text-[var(--gold-bright)] transition"
+            >FAQ</a
+          >
+        </nav>
+
+        <div class="flex items-center gap-2 sm:gap-3 shrink-0" id="navAuthArea">
+          <button
+            onclick="toggleTheme()"
+            aria-label="Toggle light and dark mode"
+            class="theme-toggle border hairline hover:border-[var(--gold)] transition"
+          >
+            <svg
+              class="icon-moon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+            <svg
+              class="icon-sun"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="4" />
+              <path
+                d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"
+              />
+            </svg>
+          </button>
+          <span
+            id="navGuestButtons"
+            class="hidden sm:inline-flex items-center gap-2 sm:gap-3"
+          >
+            <button
+              onclick="showScreen('signin')"
+              class="text-xs sm:text-sm px-3 sm:px-4 py-2 rounded hairline border hover:border-[var(--gold)] transition whitespace-nowrap"
+            >
+              Sign In
+            </button>
+            <button
+              onclick="showScreen('signup')"
+              class="text-xs sm:text-sm px-3 sm:px-4 py-2 rounded btn-gold font-semibold transition whitespace-nowrap"
+            >
+              Join VIP
+            </button>
+          </span>
+          <span
+            id="navUserButtons"
+            class="hidden sm:inline-flex items-center gap-2 sm:gap-3"
+          >
+            <button
+              onclick="showScreen('dashboard')"
+              class="text-xs sm:text-sm px-3 sm:px-4 py-2 rounded hairline border hover:border-[var(--gold)] transition whitespace-nowrap"
+            >
+              Dashboard
+            </button>
+            <button
+              onclick="handleSignOut()"
+              class="text-xs sm:text-sm px-3 sm:px-4 py-2 rounded btn-gold font-semibold transition whitespace-nowrap"
+            >
+              Sign Out
+            </button>
+          </span>
+          <!-- Hamburger (mobile / tablet) -->
+          <button
+            id="hamburgerBtn"
+            onclick="toggleMobileNav()"
+            aria-label="Open menu"
+            aria-expanded="false"
+            class="lg:hidden theme-toggle border hairline hover:border-[var(--gold)] transition"
+          >
+            <span>
+              <span class="hamburger-line line-1"></span>
+              <span class="hamburger-line line-2"></span>
+              <span class="hamburger-line line-3"></span>
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile nav drawer -->
+      <div id="mobileNav" class="lg:hidden border-t hairline">
+        <nav
+          class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex flex-col gap-1 font-mono-num text-xs tracking-[0.15em] uppercase"
+        >
+          <a
+            href="#"
+            onclick="
+              showScreen('landing');
+              closeMobileNav();
+              return false;
+            "
+            class="py-2.5 border-b hairline hover:text-[var(--gold-bright)] transition"
+            >Home</a
+          >
+          <a
+            href="#how-it-works"
+            onclick="
+              showScreen('landing');
+              closeMobileNav();
+            "
+            class="py-2.5 border-b hairline hover:text-[var(--gold-bright)] transition"
+            >How It Works</a
+          >
+          <a
+            href="#tiers"
+            onclick="
+              showScreen('landing');
+              closeMobileNav();
+            "
+            class="py-2.5 border-b hairline hover:text-[var(--gold-bright)] transition"
+            >Prices</a
+          >
+          <a
+            href="#testimonials"
+            onclick="
+              showScreen('landing');
+              closeMobileNav();
+            "
+            class="py-2.5 border-b hairline hover:text-[var(--gold-bright)] transition"
+            >Testimonies</a
+          >
+          <a
+            href="#faq"
+            onclick="
+              showScreen('landing');
+              closeMobileNav();
+            "
+            class="py-2.5 border-b hairline hover:text-[var(--gold-bright)] transition"
+            >FAQ</a
+          >
+          <div id="mobileGuestButtons" class="flex gap-3 pt-3">
+            <button
+              onclick="
+                showScreen('signin');
+                closeMobileNav();
+              "
+              class="flex-1 text-xs px-3 py-2.5 rounded hairline border hover:border-[var(--gold)] transition normal-case tracking-normal"
+            >
+              Sign In
+            </button>
+            <button
+              onclick="
+                showScreen('signup');
+                closeMobileNav();
+              "
+              class="flex-1 text-xs px-3 py-2.5 rounded btn-gold font-semibold transition normal-case tracking-normal"
+            >
+              Join VIP
+            </button>
+          </div>
+          <div id="mobileUserButtons" class="hidden gap-3 pt-3">
+            <button
+              onclick="
+                showScreen('dashboard');
+                closeMobileNav();
+              "
+              class="flex-1 text-xs px-3 py-2.5 rounded hairline border hover:border-[var(--gold)] transition normal-case tracking-normal"
+            >
+              Dashboard
+            </button>
+            <button
+              onclick="
+                handleSignOut();
+                closeMobileNav();
+              "
+              class="flex-1 text-xs px-3 py-2.5 rounded btn-gold font-semibold transition normal-case tracking-normal"
+            >
+              Sign Out
+            </button>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- ============================================================ -->
+    <!-- LANDING -->
+    <!-- ============================================================ -->
+    <main id="screen-landing" class="fade-screen">
+      <!-- HERO -->
+      <section
+        class="max-w-6xl mx-auto px-4 sm:px-6 pt-10 sm:pt-16 pb-14 sm:pb-20 md:pt-24 md:pb-28 grid md:grid-cols-2 gap-10 md:gap-12 items-center"
+      >
+        <div>
+          <p
+            class="font-mono-num text-xs tracking-[0.3em] uppercase mb-4"
+            style="color: var(--sage)"
+          >
+            Est. for sharp bettors
+          </p>
+          <h1
+            class="font-display text-4xl sm:text-5xl md:text-6xl leading-[1.05] mb-6"
+          >
+            Sharp money<br />
+            moves
+            <span class="italic odds-glow" style="color: var(--gold-bright)"
+              >quietly.</span
+            >
+          </h1>
+          <p class="text-base md:text-lg text-parchment/70 max-w-md mb-8">
+            Bet Guru delivers vetted picks and bankroll guidance across FanDuel,
+            DraftKings, Underdog and more — for members who'd rather follow the
+            line than chase it.
+          </p>
+          <div class="flex flex-wrap gap-4">
+            <button
+              id="heroGuestCta"
+              onclick="showScreen('signup')"
+              class="px-6 py-3 rounded btn-gold font-semibold w-full sm:w-auto"
+            >
+              Become a Member
+            </button>
+            <button
+              id="heroUserCta"
+              onclick="showScreen('dashboard')"
+              class="hidden px-6 py-3 rounded btn-gold font-semibold w-full sm:w-auto"
+            >
+              Go to Dashboard
+            </button>
+            <a
+              href="#tiers"
+              class="px-6 py-3 rounded border hairline hover:border-[var(--gold)] transition text-center w-full sm:w-auto"
+              >See VIP Tiers</a
+            >
+          </div>
+        </div>
+        <div class="relative">
+          <div
+            class="ticket p-6 sm:p-8 mx-auto max-w-xs sm:max-w-sm shadow-2xl shadow-black/50 rotate-1"
+          >
+            <div
+              class="flex justify-between items-start font-mono-num text-[10px] sm:text-[11px] uppercase tracking-widest text-black/50"
+            >
+              <span>Slip №0417</span>
+              <span>Bet Guru VIP</span>
+            </div>
+            <div
+              class="relative mx-auto max-w-xs sm:max-w-sm rounded-lg overflow-hidden shadow-2xl shadow-black/50 rotate-1 aspect-[4/5]"
+            >
+              <img
+                id="heroSportImg"
+                src=""
+                alt=""
+                class="w-full h-full object-cover transition-opacity duration-700"
+              />
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="stamp px-3 py-1 rounded text-xs font-bold">
+                VIP ACCESS
+              </div>
+              <p class="font-mono-num text-xl sm:text-2xl font-semibold">
+                92%<span class="text-xs align-top"> conf.</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SUPPORTED APPS -->
+      <section class="border-y hairline py-5 sm:py-6">
+        <div
+          class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-wrap items-center justify-center gap-x-2 sm:gap-x-4 gap-y-3 font-mono-num text-[11px] sm:text-xs uppercase tracking-[0.2em] text-parchment/50"
+        >
+          <button
+            type="button"
+            class="platform-badge"
+            onclick="showPlatformInfo('FanDuel')"
+          >
+            FanDuel
+          </button>
+          <button
+            type="button"
+            class="platform-badge"
+            onclick="showPlatformInfo('DraftKings')"
+          >
+            DraftKings
+          </button>
+          <button
+            type="button"
+            class="platform-badge"
+            onclick="showPlatformInfo('Underdog')"
+          >
+            Underdog
+          </button>
+          <button
+            type="button"
+            class="platform-badge"
+            onclick="showPlatformInfo('PrizePicks')"
+          >
+            PrizePicks
+          </button>
+          <button
+            type="button"
+            class="platform-badge"
+            onclick="showPlatformInfo('BetMGM')"
+          >
+            BetMGM
+          </button>
+          <button
+            type="button"
+            class="platform-badge"
+            onclick="showPlatformInfo('Caesars')"
+          >
+            Caesars
+          </button>
+        </div>
+        <p
+          class="text-center text-[10px] text-parchment/30 mt-3 font-mono-num px-2"
+        >
+          Tap a platform for its rolling hit rate
+        </p>
+      </section>
+
+      <!-- HOW IT WORKS -->
+      <section
+        id="how-it-works"
+        class="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-20 border-b hairline"
+      >
+        <div class="text-center mb-10 sm:mb-14">
+          <p
+            class="font-mono-num text-xs tracking-[0.3em] uppercase mb-3"
+            style="color: var(--sage)"
+          >
+            How it works
+          </p>
+          <h2 class="font-display text-3xl sm:text-4xl md:text-5xl">
+            Three steps to the slip.
+          </h2>
+        </div>
+        <div class="grid sm:grid-cols-3 gap-6 sm:gap-8">
+          <div class="bg-pine/40 border hairline rounded-lg p-6">
+            <p
+              class="font-mono-num text-xs tracking-widest"
+              style="color: var(--sage)"
+            >
+              Step 1
+            </p>
+            <p class="font-display text-xl mt-2 mb-2">Join a tier</p>
+            <p class="text-sm text-parchment/60">
+              Pick the pass that fits how often you bet — from a 5-day trial to
+              a lifetime membership.
+            </p>
+          </div>
+          <div class="bg-pine/40 border hairline rounded-lg p-6">
+            <p
+              class="font-mono-num text-xs tracking-widest"
+              style="color: var(--sage)"
+            >
+              Step 2
+            </p>
+            <p class="font-display text-xl mt-2 mb-2">Get the picks</p>
+            <p class="text-sm text-parchment/60">
+              Daily VIP picks and bankroll guidance land in your dashboard and
+              the members' Discord.
+            </p>
+          </div>
+          <div class="bg-pine/40 border hairline rounded-lg p-6">
+            <p
+              class="font-mono-num text-xs tracking-widest"
+              style="color: var(--sage)"
+            >
+              Step 3
+            </p>
+            <p class="font-display text-xl mt-2 mb-2">Bet on your platform</p>
+            <p class="text-sm text-parchment/60">
+              Place the slip on your own FanDuel, DraftKings, Underdog or other
+              sportsbook account.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIP TIERS -->
+      <section id="tiers" class="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-20">
+        <div class="text-center mb-10 sm:mb-14">
+          <p
+            class="font-mono-num text-xs tracking-[0.3em] uppercase mb-3"
+            style="color: var(--sage)"
+          >
+            Membership Tiers
+          </p>
+          <h2 class="font-display text-3xl sm:text-4xl md:text-5xl">
+            Pick your pass.
+          </h2>
+        </div>
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 md:gap-10"
+        >
+          <div class="ticket p-5 sm:p-6 flex flex-col">
+            <p
+              class="font-mono-num text-[11px] uppercase tracking-widest text-black/50"
+            >
+              Trial Slip
+            </p>
+            <p class="font-display text-2xl mt-1 mb-4">5-Day Pass</p>
+            <p class="font-mono-num text-3xl sm:text-4xl font-semibold mb-1">
+              $60
+            </p>
+            <p class="text-xs text-black/50 mb-5">one-time · 5 days access</p>
+            <ul class="text-xs text-black/60 space-y-1.5 mb-6">
+              <li class="flex gap-1.5">
+                <span style="color: var(--crimson)">✓</span> Daily VIP picks
+              </li>
+              <li class="flex gap-1.5">
+                <span style="color: var(--crimson)">✓</span> Single-platform
+                focus
+              </li>
+              <li class="flex gap-1.5">
+                <span style="color: var(--crimson)">✓</span> Community access
+              </li>
+            </ul>
+            <div class="ticket-perf pt-4 mt-auto">
+              <button
+                onclick="selectTier('5-Day Pass', 60)"
+                class="w-full py-2.5 rounded bg-black text-parchment text-sm font-semibold hover:opacity-85 transition"
+              >
+                Get Access
+              </button>
+              <p
+                class="text-center text-[10px] text-black/40 mt-2 font-mono-num"
+              >
+                Secure checkout
+              </p>
+            </div>
+          </div>
+
+          <div class="ticket p-5 sm:p-6 flex flex-col">
+            <p
+              class="font-mono-num text-[11px] uppercase tracking-widest text-black/50"
+            >
+              Standard Slip
+            </p>
+            <p class="font-display text-2xl mt-1 mb-4">Weekly</p>
+            <p class="font-mono-num text-3xl sm:text-4xl font-semibold mb-1">
+              $120
+            </p>
+            <p class="text-xs text-black/50 mb-5">billed · every 7 days</p>
+            <ul class="text-xs text-black/60 space-y-1.5 mb-6">
+              <li class="flex gap-1.5">
+                <span style="color: var(--crimson)">✓</span> Daily VIP picks
+              </li>
+              <li class="flex gap-1.5">
+                <span style="color: var(--crimson)">✓</span> All covered
+                platforms
+              </li>
+              <li class="flex gap-1.5">
+                <span style="color: var(--crimson)">✓</span> Bankroll guidance
+              </li>
+              <li class="flex gap-1.5">
+                <span style="color: var(--crimson)">✓</span> Community access
+              </li>
+            </ul>
+            <div class="ticket-perf pt-4 mt-auto">
+              <button
+                onclick="selectTier('Weekly', 120)"
+                class="w-full py-2.5 rounded bg-black text-parchment text-sm font-semibold hover:opacity-85 transition"
+              >
+                Get Access
+              </button>
+              <p
+                class="text-center text-[10px] text-black/40 mt-2 font-mono-num"
+              >
+                Secure checkout
+              </p>
+            </div>
+          </div>
+
+          <div
+            class="ticket p-5 sm:p-6 flex flex-col ring-2 relative"
+            style="--tw-ring-color: var(--gold)"
+          >
+            <div
+              class="stamp self-start px-2 py-0.5 rounded text-[10px] font-bold mb-2"
+            >
+              BEST VALUE
+            </div>
+            <p
+              class="font-mono-num text-[11px] uppercase tracking-widest text-black/50"
+            >
+              Guru Slip
+            </p>
+            <p class="font-display text-2xl mt-1 mb-4">Monthly</p>
+            <p class="font-mono-num text-3xl sm:text-4xl font-semibold mb-1">
+              $230
+            </p>
+            <p class="text-xs text-black/50 mb-5">
+              billed · every 30 days · save vs. weekly
+            </p>
+            <ul class="text-xs text-black/60 space-y-1.5 mb-6">
+              <li class="flex gap-1.5">
+                <span style="color: var(--crimson)">✓</span> Daily VIP picks
+              </li>
+              <li class="flex gap-1.5">
+                <span style="color: var(--crimson)">✓</span> All covered
+                platforms
+              </li>
+              <li class="flex gap-1.5">
+                <span style="color: var(--crimson)">✓</span> Bankroll guidance
+              </li>
+              <li class="flex gap-1.5">
+                <span style="color: var(--crimson)">✓</span> Priority Discord
+                access
+              </li>
+              <li class="flex gap-1.5">
+                <span style="color: var(--crimson)">✓</span> Cancel anytime
+              </li>
+            </ul>
+            <div class="ticket-perf pt-4 mt-auto">
+              <button
+                onclick="selectTier('Monthly', 230)"
+                class="w-full py-2.5 rounded font-semibold text-sm hover:opacity-85 transition"
+                style="background: var(--gold); color: #1b1a14"
+              >
+                Get Access
+              </button>
+              <p
+                class="text-center text-[10px] text-black/40 mt-2 font-mono-num"
+              >
+                Secure checkout
+              </p>
+            </div>
+          </div>
+
+          <div class="ticket p-5 sm:p-6 flex flex-col">
+            <p
+              class="font-mono-num text-[11px] uppercase tracking-widest text-black/50"
+            >
+              Founders Slip
+            </p>
+            <p class="font-display text-2xl mt-1 mb-4">Lifetime</p>
+            <p class="font-mono-num text-3xl sm:text-4xl font-semibold mb-1">
+              $800
+            </p>
+            <p class="text-xs text-black/50 mb-5">one-time · never expires</p>
+            <ul class="text-xs text-black/60 space-y-1.5 mb-6">
+              <li class="flex gap-1.5">
+                <span style="color: var(--crimson)">✓</span> Everything in
+                Monthly
+              </li>
+              <li class="flex gap-1.5">
+                <span style="color: var(--crimson)">✓</span> Founders-only picks
+              </li>
+              <li class="flex gap-1.5">
+                <span style="color: var(--crimson)">✓</span> Direct line to
+                analysts
+              </li>
+              <li class="flex gap-1.5">
+                <span style="color: var(--crimson)">✓</span> Locked-in price for
+                life
+              </li>
+            </ul>
+            <div class="ticket-perf pt-4 mt-auto">
+              <button
+                onclick="selectTier('Lifetime', 800)"
+                class="w-full py-2.5 rounded bg-black text-parchment text-sm font-semibold hover:opacity-85 transition"
+              >
+                Get Access
+              </button>
+              <p
+                class="text-center text-[10px] text-black/40 mt-2 font-mono-num"
+              >
+                Secure checkout
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trust strip -->
+        <div
+          class="flex flex-wrap items-center justify-center gap-x-6 sm:gap-x-10 gap-y-3 mt-8 sm:mt-10 font-mono-num text-[10px] sm:text-[11px] uppercase tracking-[0.2em] text-parchment/50"
+        >
+          <span class="flex items-center gap-2"
+            ><span style="color: var(--gold-bright)">&#10003;</span> Secure
+            checkout</span
+          >
+          <span class="flex items-center gap-2"
+            ><span style="color: var(--gold-bright)">&#10003;</span> Cancel
+            anytime</span
+          >
+          <span class="flex items-center gap-2"
+            ><span style="color: var(--gold-bright)">&#10003;</span> 1,200+
+            active members*</span
+          >
+          <span class="flex items-center gap-2"
+            ><span style="color: var(--gold-bright)">&#10003;</span> Encrypted
+            account data</span
+          >
+        </div>
+        <p
+          class="text-center text-xs text-parchment/40 mt-6 font-mono-num px-4"
+        >
+          Sign in required to subscribe · tap a tier to continue
+        </p>
+        <p class="text-center text-[10px] text-parchment/30 mt-1 px-4">
+          *Sample figure — replace with your real, verified member count.
+        </p>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- WIN RATES -->
+      <!-- ============================================================ -->
+      <section id="win-rates" class="border-t hairline py-14 sm:py-20">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+          <div class="text-center mb-10 sm:mb-14">
+            <p
+              class="font-mono-num text-xs tracking-[0.3em] uppercase mb-3"
+              style="color: var(--sage)"
+            >
+              Track record
+            </p>
+            <h2 class="font-display text-3xl sm:text-4xl md:text-5xl">
+              Where the picks hit.
+            </h2>
+            <p class="text-sm text-parchment/50 mt-3 max-w-md mx-auto">
+              Rolling 30-day hit rate by platform, updated for members.
+            </p>
+          </div>
+          <div
+            class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4 md:gap-6"
+          >
+            <div
+              id="winrate-FanDuel"
+              class="bg-pine/40 border hairline rounded-lg p-4 sm:p-5 text-center transition"
+            >
+              <p
+                class="font-mono-num text-2xl sm:text-3xl font-semibold"
+                style="color: var(--gold-bright)"
+                data-winrate="87"
+              >
+                87%
+              </p>
+              <p
+                class="text-[11px] sm:text-xs uppercase tracking-widest text-parchment/50 mt-2"
+              >
+                FanDuel
+              </p>
+            </div>
+            <div
+              id="winrate-Underdog"
+              class="bg-pine/40 border hairline rounded-lg p-4 sm:p-5 text-center transition"
+            >
+              <p
+                class="font-mono-num text-2xl sm:text-3xl font-semibold"
+                style="color: var(--gold-bright)"
+                data-winrate="84"
+              >
+                84%
+              </p>
+              <p
+                class="text-[11px] sm:text-xs uppercase tracking-widest text-parchment/50 mt-2"
+              >
+                Underdog
+              </p>
+            </div>
+            <div
+              id="winrate-PrizePicks"
+              class="bg-pine/40 border hairline rounded-lg p-4 sm:p-5 text-center transition"
+            >
+              <p
+                class="font-mono-num text-2xl sm:text-3xl font-semibold"
+                style="color: var(--gold-bright)"
+                data-winrate="89"
+              >
+                89%
+              </p>
+              <p
+                class="text-[11px] sm:text-xs uppercase tracking-widest text-parchment/50 mt-2"
+              >
+                PrizePicks
+              </p>
+            </div>
+            <div
+              id="winrate-Bet365"
+              class="bg-pine/40 border hairline rounded-lg p-4 sm:p-5 text-center transition"
+            >
+              <p
+                class="font-mono-num text-2xl sm:text-3xl font-semibold"
+                style="color: var(--gold-bright)"
+                data-winrate="81"
+              >
+                81%
+              </p>
+              <p
+                class="text-[11px] sm:text-xs uppercase tracking-widest text-parchment/50 mt-2"
+              >
+                Bet365
+              </p>
+            </div>
+            <div
+              id="winrate-DraftKings"
+              class="bg-pine/40 border hairline rounded-lg p-4 sm:p-5 text-center col-span-2 sm:col-span-1 transition"
+            >
+              <p
+                class="font-mono-num text-2xl sm:text-3xl font-semibold"
+                style="color: var(--gold-bright)"
+                data-winrate="85"
+              >
+                85%
+              </p>
+              <p
+                class="text-[11px] sm:text-xs uppercase tracking-widest text-parchment/50 mt-2"
+              >
+                DraftKings
+              </p>
+            </div>
+          </div>
+          <p
+            class="text-center text-[10px] text-parchment/30 mt-6 font-mono-num px-2"
+          >
+            Sample figures for design purposes — swap in your real, auditable
+            results before launch. Past performance never guarantees future
+            results.
+          </p>
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- TESTIMONIALS -->
+      <!-- ============================================================ -->
+      <section id="testimonials" class="border-t hairline py-14 sm:py-20">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+          <div class="text-center mb-10 sm:mb-14">
+            <p
+              class="font-mono-num text-xs tracking-[0.3em] uppercase mb-3"
+              style="color: var(--sage)"
+            >
+              Member voices
+            </p>
+            <h2 class="font-display text-3xl sm:text-4xl md:text-5xl">
+              What members are saying.
+            </h2>
+          </div>
+          <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <div class="ticket p-6">
+              <p
+                class="font-mono-num text-xs text-black/40 uppercase tracking-widest mb-3"
+              >
+                ★★★★★
+              </p>
+              <p class="font-display text-lg leading-snug mb-4">
+                "The parlay picks alone paid for a year of membership in the
+                first month."
+              </p>
+              <p
+                class="ticket-perf pt-3 text-xs uppercase tracking-widest text-black/50"
+              >
+                Placeholder Member · FanDuel
+              </p>
+            </div>
+            <div class="ticket p-6">
+              <p
+                class="font-mono-num text-xs text-black/40 uppercase tracking-widest mb-3"
+              >
+                ★★★★★
+              </p>
+              <p class="font-display text-lg leading-snug mb-4">
+                "Finally a service that explains the reasoning instead of just
+                dropping a pick and disappearing."
+              </p>
+              <p
+                class="ticket-perf pt-3 text-xs uppercase tracking-widest text-black/50"
+              >
+                Placeholder Member · Underdog
+              </p>
+            </div>
+            <div class="ticket p-6 sm:col-span-2 md:col-span-1">
+              <p
+                class="font-mono-num text-xs text-black/40 uppercase tracking-widest mb-3"
+              >
+                ★★★★★
+              </p>
+              <p class="font-display text-lg leading-snug mb-4">
+                "Went lifetime after the trial week. Bankroll management tips
+                changed how I bet entirely."
+              </p>
+              <p
+                class="ticket-perf pt-3 text-xs uppercase tracking-widest text-black/50"
+              >
+                Placeholder Member · PrizePicks
+              </p>
+            </div>
+          </div>
+          <p
+            class="text-center text-[10px] text-parchment/30 mt-8 font-mono-num px-2"
+          >
+            These are placeholder quotes for layout purposes — replace with
+            real, consenting member testimonials before launch.
+          </p>
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- FAQ -->
+      <!-- ============================================================ -->
+      <section id="faq" class="border-t hairline py-14 sm:py-20">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6">
+          <div class="text-center mb-10 sm:mb-14">
+            <p
+              class="font-mono-num text-xs tracking-[0.3em] uppercase mb-3"
+              style="color: var(--sage)"
+            >
+              Questions
+            </p>
+            <h2 class="font-display text-3xl sm:text-4xl md:text-5xl">
+              Frequently asked.
+            </h2>
+          </div>
+          <div class="divide-y hairline border-y hairline">
+            <details class="group py-4">
+              <summary
+                class="flex items-center justify-between cursor-pointer list-none"
+              >
+                <span class="font-display text-lg"
+                  >Do I need my own sportsbook account?</span
+                >
+                <span
+                  class="text-parchment/40 group-open:rotate-45 transition font-mono-num text-xl leading-none"
+                  >+</span
+                >
+              </summary>
+              <p class="text-sm text-parchment/60 mt-3 pr-6">
+                Yes. Bet Guru sends picks and guidance — you place bets yourself
+                on your own FanDuel, DraftKings, Underdog, PrizePicks, BetMGM or
+                Caesars account.
+              </p>
+            </details>
+            <details class="group py-4">
+              <summary
+                class="flex items-center justify-between cursor-pointer list-none"
+              >
+                <span class="font-display text-lg">Can I cancel anytime?</span>
+                <span
+                  class="text-parchment/40 group-open:rotate-45 transition font-mono-num text-xl leading-none"
+                  >+</span
+                >
+              </summary>
+              <p class="text-sm text-parchment/60 mt-3 pr-6">
+                Weekly and Monthly plans can be cancelled anytime from your
+                dashboard; the 5-Day Pass and Lifetime plan are one-time
+                purchases.
+              </p>
+            </details>
+            <details class="group py-4">
+              <summary
+                class="flex items-center justify-between cursor-pointer list-none"
+              >
+                <span class="font-display text-lg"
+                  >What payment methods do you accept?</span
+                >
+                <span
+                  class="text-parchment/40 group-open:rotate-45 transition font-mono-num text-xl leading-none"
+                  >+</span
+                >
+              </summary>
+              <p class="text-sm text-parchment/60 mt-3 pr-6">
+                Cash App, Zelle, Chime, Bitcoin and Apple Pay. Access unlocks
+                once your payment is confirmed by the team.
+              </p>
+            </details>
+            <details class="group py-4">
+              <summary
+                class="flex items-center justify-between cursor-pointer list-none"
+              >
+                <span class="font-display text-lg"
+                  >Are the win rates guaranteed?</span
+                >
+                <span
+                  class="text-parchment/40 group-open:rotate-45 transition font-mono-num text-xl leading-none"
+                  >+</span
+                >
+              </summary>
+              <p class="text-sm text-parchment/60 mt-3 pr-6">
+                No. Past performance never guarantees future results, and all
+                betting carries risk of loss. Only wager what you can afford to
+                lose.
+              </p>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- FOOTER -->
+      <!-- ============================================================ -->
+      <footer class="border-t hairline pt-12 sm:pt-16 pb-8">
+        <div
+          class="max-w-6xl mx-auto px-4 sm:px-6 grid grid-cols-2 sm:grid-cols-4 gap-8 sm:gap-10 mb-10 sm:mb-12"
+        >
+          <div>
+            <p
+              class="font-display text-2xl mb-3"
+              style="color: var(--gold-bright)"
+            >
+              Bet Guru
+            </p>
+            <p class="text-sm text-parchment/50 max-w-xs">
+              VIP picks and bankroll guidance for members who follow the line,
+              not the hype.
+            </p>
+          </div>
+          <div>
+            <p
+              class="font-mono-num text-xs uppercase tracking-widest text-parchment/40 mb-4"
+            >
+              Membership
+            </p>
+            <ul class="space-y-2 text-sm text-parchment/60">
+              <li>
+                <a
+                  href="#tiers"
+                  class="hover:text-[var(--gold-bright)] transition"
+                  >Pricing</a
+                >
+              </li>
+              <li id="footerGuestLinks-1">
+                <a
+                  href="#"
+                  onclick="showScreen('signup')"
+                  class="hover:text-[var(--gold-bright)] transition"
+                  >Join VIP</a
+                >
+              </li>
+              <li id="footerGuestLinks-2">
+                <a
+                  href="#"
+                  onclick="showScreen('signin')"
+                  class="hover:text-[var(--gold-bright)] transition"
+                  >Sign in</a
+                >
+              </li>
+              <li id="footerUserLinks" class="hidden">
+                <a
+                  href="#"
+                  onclick="showScreen('dashboard')"
+                  class="hover:text-[var(--gold-bright)] transition"
+                  >Dashboard</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <p
+              class="font-mono-num text-xs uppercase tracking-widest text-parchment/40 mb-4"
+            >
+              Platforms covered
+            </p>
+            <ul class="space-y-2 text-sm text-parchment/60">
+              <li>FanDuel · DraftKings</li>
+              <li>Underdog · PrizePicks</li>
+              <li>Bet365 · BetMGM · Caesars</li>
+            </ul>
+          </div>
+          <div>
+            <p
+              class="font-mono-num text-xs uppercase tracking-widest text-parchment/40 mb-4"
+            >
+              Legal
+            </p>
+            <ul class="space-y-2 text-sm text-parchment/60">
+              <li>Terms of Service</li>
+              <li>Privacy Policy</li>
+              <li>Responsible Gambling</li>
+            </ul>
+          </div>
+        </div>
+        <div
+          class="max-w-6xl mx-auto px-4 sm:px-6 border-t hairline pt-6 flex flex-col md:flex-row items-center justify-between gap-3 text-[11px] sm:text-xs text-parchment/40 text-center md:text-left"
+        >
+          <p>© 2026 Bet Guru. Members must be 18+. Bet responsibly.</p>
+          <p class="font-mono-num tracking-widest uppercase text-center">
+            No guarantees · results not typical · gambling involves risk
+          </p>
+        </div>
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 mt-4 text-center">
+          <p class="text-[10px] text-parchment/30">
+            Gambling problem? Call or text the National Problem Gambling
+            Helpline: 1-800-522-4700.
+          </p>
+        </div>
+      </footer>
+    </main>
+
+    <!-- ============================================================ -->
+    <!-- SIGN UP -->
+    <!-- ============================================================ -->
+    <section
+      id="screen-signup"
+      class="hidden fade-screen min-h-[80vh] flex items-center justify-center px-4 sm:px-6 py-12 sm:py-16"
+    >
+      <div class="w-full max-w-md">
+        <div class="text-center mb-8">
+          <p
+            class="font-mono-num text-xs tracking-[0.3em] uppercase mb-2"
+            style="color: var(--sage)"
+          >
+            Join the club
+          </p>
+          <h2 class="font-display text-3xl sm:text-4xl">Create your account</h2>
+        </div>
+
+        <form
+          id="signupForm"
+          class="space-y-4 bg-pine/40 border hairline rounded-lg p-5 sm:p-6 md:p-8"
+          onsubmit="handleSignUp(event)"
+        >
+          <div>
+            <label
+              class="block text-xs uppercase tracking-wide text-parchment/60 mb-1.5"
+              >Full name</label
+            >
+            <input
+              required
+              id="su-name"
+              type="text"
+              placeholder="Jordan Rivers"
+              class="input-field w-full rounded px-3 py-2.5 text-sm"
+            />
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label
+                class="block text-xs uppercase tracking-wide text-parchment/60 mb-1.5"
+                >Country</label
+              >
+              <select
+                required
+                id="su-country"
+                class="input-field w-full rounded px-3 py-2.5 text-sm"
+              >
+                <option value="">Select</option>
+                <option>United States</option>
+                <option>Canada</option>
+                <option>United Kingdom</option>
+                <option>Nigeria</option>
+                <option>Ghana</option>
+                <option>South Africa</option>
+                <option>Australia</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div>
+              <label
+                class="block text-xs uppercase tracking-wide text-parchment/60 mb-1.5"
+                >Sex</label
+              >
+              <select
+                required
+                id="su-sex"
+                class="input-field w-full rounded px-3 py-2.5 text-sm"
+              >
+                <option value="">Select</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+                <option>Prefer not to say</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label
+              class="block text-xs uppercase tracking-wide text-parchment/60 mb-1.5"
+              >Email</label
+            >
+            <input
+              required
+              id="su-email"
+              type="email"
+              placeholder="you@example.com"
+              class="input-field w-full rounded px-3 py-2.5 text-sm"
+            />
+          </div>
+
+          <div>
+            <label
+              class="block text-xs uppercase tracking-wide text-parchment/60 mb-1.5"
+              >Betting application</label
+            >
+            <select
+              required
+              id="su-app"
+              class="input-field w-full rounded px-3 py-2.5 text-sm"
+            >
+              <option value="">Select</option>
+              <option>FanDuel</option>
+              <option>DraftKings</option>
+              <option>Underdog</option>
+              <option>PrizePicks</option>
+              <option>BetMGM</option>
+              <option>Caesars</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label
+              class="block text-xs uppercase tracking-wide text-parchment/60 mb-1.5"
+              >Password</label
+            >
+            <input
+              required
+              id="su-password"
+              type="password"
+              minlength="6"
+              placeholder="••••••••"
+              class="input-field w-full rounded px-3 py-2.5 text-sm"
+            />
+          </div>
+
+          <button
+            type="submit"
+            class="w-full py-3 rounded btn-gold font-semibold mt-2"
+          >
+            Create Account
+          </button>
+          <p class="text-center text-xs text-parchment/50">
+            Already a member?
+            <button
+              type="button"
+              onclick="showScreen('signin')"
+              class="underline hover:text-[var(--gold-bright)]"
+            >
+              Sign in
+            </button>
+          </p>
+        </form>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SIGN IN -->
+    <!-- ============================================================ -->
+    <section
+      id="screen-signin"
+      class="hidden fade-screen min-h-[80vh] flex items-center justify-center px-4 sm:px-6 py-12 sm:py-16"
+    >
+      <div class="w-full max-w-sm">
+        <div class="text-center mb-8">
+          <p
+            class="font-mono-num text-xs tracking-[0.3em] uppercase mb-2"
+            style="color: var(--sage)"
+          >
+            Welcome back
+          </p>
+          <h2 class="font-display text-3xl sm:text-4xl">Sign in</h2>
+        </div>
+        <form
+          class="space-y-4 bg-pine/40 border hairline rounded-lg p-5 sm:p-6 md:p-8"
+          onsubmit="handleSignIn(event)"
+        >
+          <div>
+            <label
+              class="block text-xs uppercase tracking-wide text-parchment/60 mb-1.5"
+              >Email</label
+            >
+            <input
+              required
+              id="si-email"
+              type="email"
+              placeholder="you@example.com"
+              class="input-field w-full rounded px-3 py-2.5 text-sm"
+            />
+          </div>
+          <div>
+            <label
+              class="block text-xs uppercase tracking-wide text-parchment/60 mb-1.5"
+              >Password</label
+            >
+            <input
+              required
+              id="si-password"
+              type="password"
+              placeholder="••••••••"
+              class="input-field w-full rounded px-3 py-2.5 text-sm"
+            />
+          </div>
+          <button
+            type="submit"
+            class="w-full py-3 rounded btn-gold font-semibold mt-2"
+          >
+            Sign In
+          </button>
+          <p class="text-center text-xs text-parchment/50">
+            New here?
+            <button
+              type="button"
+              onclick="showScreen('signup')"
+              class="underline hover:text-[var(--gold-bright)]"
+            >
+              Create an account
+            </button>
+          </p>
+        </form>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- DASHBOARD -->
+    <!-- ============================================================ -->
+    <section
+      id="screen-dashboard"
+      class="hidden fade-screen max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-14"
+    >
+      <div
+        class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 sm:mb-10"
+      >
+        <div>
+          <p
+            class="font-mono-num text-xs tracking-[0.3em] uppercase"
+            style="color: var(--sage)"
+          >
+            Dashboard
+          </p>
+          <h1 class="font-display text-3xl sm:text-4xl mt-1 break-words">
+            Welcome,
+            <span id="db-name" style="color: var(--gold-bright)">Member</span>
+          </h1>
+        </div>
+        <button
+          onclick="handleSignOut()"
+          class="text-sm px-4 py-2 rounded border hairline hover:border-[var(--gold)] transition self-start sm:self-auto"
+        >
+          Sign Out
+        </button>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-10">
+        <!-- Balance -->
+        <div
+          class="md:col-span-2 bg-pine/40 border hairline rounded-lg p-5 sm:p-8"
+        >
+          <p
+            class="font-mono-num text-xs tracking-[0.3em] uppercase text-parchment/50 mb-3"
+          >
+            Available Balance
+          </p>
+          <p
+            class="font-mono-num text-4xl sm:text-5xl font-semibold odds-glow break-all"
+            style="color: var(--gold-bright)"
+          >
+            $<span id="db-balance">0.00</span>
+          </p>
+          <div class="flex flex-wrap gap-3 mt-6 sm:mt-8">
+            <button
+              onclick="openModal('withdrawModal')"
+              class="px-5 py-2.5 rounded border hairline hover:border-[var(--gold)] text-sm font-semibold transition flex-1 sm:flex-none"
+            >
+              Withdraw
+            </button>
+            <button
+              onclick="openModal('subscribeModal')"
+              class="px-5 py-2.5 rounded btn-gold text-sm font-semibold transition flex-1 sm:flex-none"
+            >
+              Subscribe / Upgrade
+            </button>
+          </div>
+        </div>
+
+        <!-- Membership status -->
+        <div
+          class="bg-pine/40 border hairline rounded-lg p-5 sm:p-8 flex flex-col justify-between"
+        >
+          <div>
+            <p
+              class="font-mono-num text-xs tracking-[0.3em] uppercase text-parchment/50 mb-3"
+            >
+              Membership
+            </p>
+            <p id="db-tier" class="font-display text-2xl">No active plan</p>
+            <p id="db-tier-expiry" class="text-xs text-parchment/50 mt-1">
+              Subscribe to unlock VIP picks
+            </p>
+          </div>
+          <span
+            class="font-mono-num text-[10px] uppercase tracking-widest px-2 py-1 rounded self-start mt-4 border"
+            style="border-color: var(--sage); color: var(--sage)"
+            >Betting app: <span id="db-app">—</span></span
+          >
+        </div>
+      </div>
+
+      <div class="bg-pine/40 border hairline rounded-lg p-5 sm:p-8">
+        <p
+          class="font-mono-num text-xs tracking-[0.3em] uppercase text-parchment/50 mb-4"
+        >
+          Recent Activity
+        </p>
+        <p id="db-activity-empty" class="text-sm text-parchment/50">
+          No activity yet — your withdrawals and subscription requests will show
+          up here.
+        </p>
+        <ul id="db-activity-list" class="space-y-2 text-sm"></ul>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SUBSCRIBE MODAL (tier -> payment method) -->
+    <!-- ============================================================ -->
+    <div
+      id="subscribeModal"
+      class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm items-center justify-center p-3 sm:p-4"
+    >
+      <div
+        class="bg-ink border hairline rounded-lg w-full max-w-lg max-h-[92vh] overflow-y-auto scrollbar-none"
+      >
+        <div
+          class="p-4 sm:p-6 border-b hairline flex items-center justify-between sticky top-0 bg-ink"
+        >
+          <h3 class="font-display text-xl sm:text-2xl">Choose your tier</h3>
+          <button
+            onclick="closeModal('subscribeModal')"
+            class="text-parchment/50 hover:text-parchment text-2xl leading-none"
+          >
+            &times;
+          </button>
+        </div>
+
+        <!-- Step 1: tiers -->
+        <div id="modalTierStep" class="p-4 sm:p-6 grid grid-cols-2 gap-3">
+          <button
+            onclick="selectTier('5-Day Pass', 60)"
+            class="pay-tile rounded-lg p-4 text-left"
+          >
+            <p class="font-display text-lg">5-Day</p>
+            <p class="font-mono-num text-sm" style="color: var(--gold-bright)">
+              $60
+            </p>
+          </button>
+          <button
+            onclick="selectTier('Weekly', 120)"
+            class="pay-tile rounded-lg p-4 text-left"
+          >
+            <p class="font-display text-lg">Weekly</p>
+            <p class="font-mono-num text-sm" style="color: var(--gold-bright)">
+              $120
+            </p>
+          </button>
+          <button
+            onclick="selectTier('Monthly', 230)"
+            class="pay-tile rounded-lg p-4 text-left"
+          >
+            <p class="font-display text-lg">Monthly</p>
+            <p class="font-mono-num text-sm" style="color: var(--gold-bright)">
+              $230
+            </p>
+          </button>
+          <button
+            onclick="selectTier('Lifetime', 800)"
+            class="pay-tile rounded-lg p-4 text-left"
+          >
+            <p class="font-display text-lg">Lifetime</p>
+            <p class="font-mono-num text-sm" style="color: var(--gold-bright)">
+              $800
+            </p>
+          </button>
+        </div>
+
+        <!-- Step 2: payment method -->
+        <div id="modalPayStep" class="hidden p-4 sm:p-6">
+          <button
+            onclick="backToTiers()"
+            class="text-xs uppercase tracking-widest text-parchment/50 hover:text-parchment mb-4"
+          >
+            &larr; Back to tiers
+          </button>
+          <p class="text-sm text-parchment/70 mb-1">Paying for</p>
+          <p class="font-display text-xl sm:text-2xl mb-6">
+            <span id="pay-tier-name"></span> — $<span
+              id="pay-tier-price"
+            ></span>
+          </p>
+
+          <p
+            class="font-mono-num text-xs tracking-[0.3em] uppercase text-parchment/50 mb-3"
+          >
+            Select payment method
+          </p>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
+            <button
+              onclick="selectPayMethod('Cash App')"
+              class="pay-method-tile pay-tile rounded-lg p-4 text-center text-sm font-semibold"
+              data-method="Cash App"
+            >
+              Cash App
+            </button>
+            <button
+              onclick="selectPayMethod('Zelle')"
+              class="pay-method-tile pay-tile rounded-lg p-4 text-center text-sm font-semibold"
+              data-method="Zelle"
+            >
+              Zelle
+            </button>
+            <button
+              onclick="selectPayMethod('Chime')"
+              class="pay-method-tile pay-tile rounded-lg p-4 text-center text-sm font-semibold"
+              data-method="Chime"
+            >
+              Chime
+            </button>
+            <button
+              onclick="selectPayMethod('Bitcoin')"
+              class="pay-method-tile pay-tile rounded-lg p-4 text-center text-sm font-semibold"
+              data-method="Bitcoin"
+            >
+              Bitcoin
+            </button>
+            <button
+              onclick="selectPayMethod('Apple Pay')"
+              class="pay-method-tile pay-tile rounded-lg p-4 text-center text-sm font-semibold"
+              data-method="Apple Pay"
+            >
+              Apple Pay
+            </button>
+          </div>
+
+          <div
+            id="payInstructions"
+            class="hidden bg-pine/40 border hairline rounded-lg p-5 mb-6"
+          >
+            <p
+              class="font-mono-num text-xs tracking-[0.3em] uppercase text-parchment/50 mb-2"
+            >
+              Send payment to
+            </p>
+            <p
+              id="payInstructionsText"
+              class="font-mono-num text-lg"
+              style="color: var(--gold-bright)"
+            ></p>
+            <p class="text-xs text-parchment/50 mt-2">
+              Include your account email in the note. Access unlocks once
+              payment is confirmed.
+            </p>
+          </div>
+
+          <button
+            id="confirmPaySentBtn"
+            disabled
+            onclick="confirmPaymentSent()"
+            class="w-full py-3 rounded btn-gold font-semibold disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            I've Sent Payment
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- WITHDRAW MODAL -->
+    <!-- ============================================================ -->
+    <div
+      id="withdrawModal"
+      class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm items-center justify-center p-3 sm:p-4"
+    >
+      <div
+        class="bg-ink border hairline rounded-lg w-full max-w-md max-h-[92vh] overflow-y-auto scrollbar-none"
+      >
+        <div
+          class="p-4 sm:p-6 border-b hairline flex items-center justify-between sticky top-0 bg-ink"
+        >
+          <h3 class="font-display text-xl sm:text-2xl">Withdraw funds</h3>
+          <button
+            onclick="closeModal('withdrawModal')"
+            class="text-parchment/50 hover:text-parchment text-2xl leading-none"
+          >
+            &times;
+          </button>
+        </div>
+        <form class="p-4 sm:p-6 space-y-4" onsubmit="handleWithdraw(event)">
+          <div>
+            <label
+              class="block text-xs uppercase tracking-wide text-parchment/60 mb-1.5"
+              >Amount (USD)</label
+            >
+            <input
+              required
+              id="wd-amount"
+              type="number"
+              min="1"
+              step="0.01"
+              placeholder="0.00"
+              class="input-field w-full rounded px-3 py-2.5 text-sm"
+            />
+          </div>
+          <div>
+            <label
+              class="block text-xs uppercase tracking-wide text-parchment/60 mb-1.5"
+              >Payout method</label
+            >
+            <select
+              required
+              id="wd-method"
+              class="input-field w-full rounded px-3 py-2.5 text-sm"
+            >
+              <option value="">Select</option>
+              <option>Cash App</option>
+              <option>Zelle</option>
+              <option>Chime</option>
+              <option>Bitcoin</option>
+              <option>Apple Pay</option>
+            </select>
+          </div>
+          <div>
+            <label
+              class="block text-xs uppercase tracking-wide text-parchment/60 mb-1.5"
+              >Payout destination (tag / address / email)</label
+            >
+            <input
+              required
+              id="wd-destination"
+              type="text"
+              placeholder="$cashtag, wallet address, etc."
+              class="input-field w-full rounded px-3 py-2.5 text-sm"
+            />
+          </div>
+          <button
+            type="submit"
+            class="w-full py-3 rounded btn-gold font-semibold mt-2"
+          >
+            Request Withdrawal
+          </button>
+          <p class="text-xs text-parchment/40 text-center">
+            Requests are reviewed and processed by the Bet Guru team.
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TOAST -->
+    <!-- ============================================================ -->
+    <div
+      id="toast"
+      class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] bg-pinelight border hairline px-5 py-3 rounded-lg text-sm shadow-xl max-w-[92vw] text-center"
+    ></div>
+
+    <!-- ============================================================ -->
+    <!-- WIN NOTIFICATION POP-UP (bottom left, rotating) -->
+    <!-- ============================================================ -->
+    <div
+      id="winPopup"
+      class="hidden fixed bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-auto z-[55] sm:max-w-xs bg-pinelight border hairline rounded-lg shadow-2xl p-4 fade-screen"
+    >
+      <button
+        onclick="dismissWinPopup()"
+        class="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-ink border hairline text-xs text-parchment/60 hover:text-parchment flex items-center justify-center"
+      >
+        &times;
+      </button>
+      <div class="flex items-start gap-3">
+        <div
+          class="w-9 h-9 rounded-full flex items-center justify-center shrink-0 font-display text-sm"
+          style="background: var(--gold); color: #1b1a14"
+        >
+          $
+        </div>
+        <div>
+          <p id="winPopupText" class="text-sm leading-snug"></p>
+          <p
+            class="text-[10px] text-parchment/40 mt-1 font-mono-num"
+            id="winPopupTime"
+          ></p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      /* ================================================================
+         BET GURU — front-end logic
+         Everything below is wired to a mock `db` object using localStorage
+         so the site is fully clickable right now. Swap the marked
+         TODO sections for real Supabase calls when you connect your project.
+      ================================================================= */
+
+      /* ---------- 1. SUPABASE SETUP (uncomment + fill in when ready) ----------
+      <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+
+      const SUPABASE_URL = "https://YOUR-PROJECT.supabase.co";
+      const SUPABASE_ANON_KEY = "YOUR-ANON-KEY";
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      ------------------------------------------------------------------------- */
+      const SUPABASE_URL = "https://asqsyzgcutxhhrraaaim.supabase.co";
+      const SUPABASE_ANON_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzcXN5emdjdXR4aGhycmFhYWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0NTEzNzMsImV4cCI6MjA5OTAyNzM3M30.U2CgIH8Kl6nk8SBs7pN_-L6rv4zxxDq-N0dA3h6orSc";
+
+      let currentUser = null; // holds the signed-in profile
+      let pendingTier = null; // { name, price } chosen in the subscribe modal
+      let pendingMethod = null; // chosen payment method string
+
+      const PAY_ADDRESSES = {
+        // TODO: replace these placeholders with your real handles/addresses,
+        // or better, fetch them from a `payment_settings` table in Supabase.
+        "Cash App": "$BetGuruVIP",
+        Zelle: "payments@betguru.example",
+        Chime: "$BetGuruVIP",
+        Bitcoin: "bc1qexampleaddressXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "Apple Pay": "payments@betguru.example",
+      };
+
+      /* ---------- Screen navigation ---------- */
+      function showScreen(name) {
+        ["landing", "signup", "signin", "dashboard"].forEach((s) => {
+          document
+            .getElementById("screen-" + s)
+            .classList.toggle("hidden", s !== name);
+        });
+        updateNavAuthUI();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function openModal(id) {
+        const modal = document.getElementById(id);
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+      }
+      function closeModal(id) {
+        const modal = document.getElementById(id);
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      }
+
+      function toast(msg) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.classList.remove("hidden");
+        clearTimeout(window._toastTimer);
+        window._toastTimer = setTimeout(() => t.classList.add("hidden"), 3200);
+      }
+
+      /* ---------- Header auth state ----------
+         Keeps the nav in sync with currentUser regardless of which screen
+         (landing/dashboard/etc.) is showing, so a signed-in member still
+         reads as signed in after navigating Home or anywhere else. */
+      function setNavVisible(el, visible) {
+        el.classList.toggle("hidden", !visible);
+        el.classList.toggle("sm:inline-flex", visible);
+      }
+
+      function updateNavAuthUI() {
+        const signedIn = !!currentUser;
+
+        setNavVisible(document.getElementById("navGuestButtons"), !signedIn);
+        setNavVisible(document.getElementById("navUserButtons"), signedIn);
+
+        // mobile drawer buttons are already fine (hidden/flex, no static variant class)
+        const mobileGuest = document.getElementById("mobileGuestButtons");
+        const mobileUser = document.getElementById("mobileUserButtons");
+        mobileGuest.classList.toggle("hidden", signedIn);
+        mobileGuest.classList.toggle("flex", !signedIn);
+        mobileUser.classList.toggle("hidden", !signedIn);
+        mobileUser.classList.toggle("flex", signedIn);
+
+        document
+          .getElementById("footerGuestLinks-1")
+          .classList.toggle("hidden", signedIn);
+        document
+          .getElementById("footerGuestLinks-2")
+          .classList.toggle("hidden", signedIn);
+        document
+          .getElementById("footerUserLinks")
+          .classList.toggle("hidden", !signedIn);
+
+        document
+          .getElementById("heroGuestCta")
+          .classList.toggle("hidden", signedIn);
+        document
+          .getElementById("heroUserCta")
+          .classList.toggle("hidden", !signedIn);
+      }
+
+      /* ---------- Theme toggle (light / dark) ---------- */
+      function toggleTheme() {
+        const isLight = document.documentElement.classList.toggle("light");
+        localStorage.setItem("bg_theme", isLight ? "light" : "dark");
+      }
+
+      /* ---------- Mobile nav drawer ---------- */
+      function toggleMobileNav() {
+        const nav = document.getElementById("mobileNav");
+        const btn = document.getElementById("hamburgerBtn");
+        const isOpen = nav.classList.toggle("open");
+        btn.classList.toggle("open", isOpen);
+        btn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      }
+      function closeMobileNav() {
+        document.getElementById("mobileNav").classList.remove("open");
+        const btn = document.getElementById("hamburgerBtn");
+        btn.classList.remove("open");
+        btn.setAttribute("aria-expanded", "false");
+      }
+
+      /* ---------- Platform win-rate info (supported apps strip) ---------- */
+      // Pulled from the same sample track-record data shown in the
+      // "Where the picks hit" section further down the page.
+      const PLATFORM_WIN_RATES = {
+        FanDuel: 87,
+        DraftKings: 85,
+        Underdog: 84,
+        PrizePicks: 89,
+        Bet365: 81,
+      };
+
+      function showPlatformInfo(platform) {
+        const rate = PLATFORM_WIN_RATES[platform];
+        if (rate) {
+          toast(
+            `${platform}: ${rate}% rolling 30-day hit rate for VIP members (sample figure — see full track record below).`,
+          );
+        } else {
+          toast(
+            `${platform} picks are covered by every VIP tier — see the full track record below.`,
+          );
+        }
+        const card = document.getElementById("winrate-" + platform);
+        const target = card || document.getElementById("win-rates");
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+        if (card) {
+          card.style.borderColor = "var(--gold)";
+          card.style.boxShadow = "0 0 0 3px rgba(201,162,39,0.18)";
+          setTimeout(() => {
+            card.style.borderColor = "";
+            card.style.boxShadow = "";
+          }, 1500);
+        }
+      }
+
+      /* ================================================================
+         MOCK DATABASE LAYER (localStorage)
+         Each function below is written to mirror a Supabase call 1:1 —
+         see the TODO comment inside each for the real query to drop in.
+      ================================================================= */
+      const db = {
+        async signUp({ name, country, sex, email, app, password }) {
+          // TODO (Supabase):
+          // const { data, error } = await supabase.auth.signUp({ email, password });
+          // if (error) throw error;
+          // await supabase.from('profiles').insert({
+          //   id: data.user.id, name, country, sex, betting_app: app, balance: 0
+          // });
+          const users = JSON.parse(localStorage.getItem("bg_users") || "{}");
+          if (users[email])
+            throw new Error("An account with this email already exists.");
+          const profile = {
+            name,
+            country,
+            sex,
+            email,
+            app,
+            password,
+            balance: 0,
+            tier: null,
+            tierExpiry: null,
+            activity: [],
+          };
+          users[email] = profile;
+          localStorage.setItem("bg_users", JSON.stringify(users));
+          return profile;
+        },
+
+        async signIn({ email, password }) {
+          // TODO (Supabase):
+          // const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+          // if (error) throw error;
+          // const { data: profile } = await supabase.from('profiles').select('*').eq('id', data.user.id).single();
+          const users = JSON.parse(localStorage.getItem("bg_users") || "{}");
+          const profile = users[email];
+          if (!profile || profile.password !== password)
+            throw new Error("Invalid email or password.");
+          return profile;
+        },
+
+        async saveProfile(profile) {
+          // TODO (Supabase): await supabase.from('profiles').update({...}).eq('id', profile.id);
+          const users = JSON.parse(localStorage.getItem("bg_users") || "{}");
+          users[profile.email] = profile;
+          localStorage.setItem("bg_users", JSON.stringify(users));
+        },
+
+        async createSubscriptionRequest(profile, tierName, price, method) {
+          // TODO (Supabase):
+          // await supabase.from('subscription_requests').insert({
+          //   user_id: profile.id, tier: tierName, amount: price, method, status: 'pending'
+          // });
+          profile.activity.unshift({
+            type: "Subscription requested",
+            detail: `${tierName} · $${price} via ${method} · awaiting confirmation`,
+            date: new Date().toLocaleString(),
+          });
+          await this.saveProfile(profile);
+        },
+
+        async createWithdrawalRequest(profile, amount, method, destination) {
+          // TODO (Supabase):
+          // await supabase.from('withdrawal_requests').insert({
+          //   user_id: profile.id, amount, method, destination, status: 'pending'
+          // });
+          profile.activity.unshift({
+            type: "Withdrawal requested",
+            detail: `$${amount} via ${method} to ${destination} · pending review`,
+            date: new Date().toLocaleString(),
+          });
+          await this.saveProfile(profile);
+        },
+      };
+
+      /* ---------- Auth handlers ---------- */
+      async function handleSignUp(e) {
+        e.preventDefault();
+        try {
+          const profile = await db.signUp({
+            name: document.getElementById("su-name").value.trim(),
+            country: document.getElementById("su-country").value,
+            sex: document.getElementById("su-sex").value,
+            email: document
+              .getElementById("su-email")
+              .value.trim()
+              .toLowerCase(),
+            app: document.getElementById("su-app").value,
+            password: document.getElementById("su-password").value,
+          });
+          currentUser = profile;
+          localStorage.setItem("bg_session", profile.email);
+          renderDashboard();
+          updateNavAuthUI();
+          showScreen("dashboard");
+          toast("Account created — welcome to Bet Guru.");
+        } catch (err) {
+          toast(err.message);
+        }
+      }
+
+      async function handleSignIn(e) {
+        e.preventDefault();
+        try {
+          const profile = await db.signIn({
+            email: document
+              .getElementById("si-email")
+              .value.trim()
+              .toLowerCase(),
+            password: document.getElementById("si-password").value,
+          });
+          currentUser = profile;
+          localStorage.setItem("bg_session", profile.email);
+          renderDashboard();
+          updateNavAuthUI();
+          showScreen("dashboard");
+          toast("Signed in.");
+        } catch (err) {
+          toast(err.message);
+        }
+      }
+
+      function handleSignOut() {
+        // TODO (Supabase): await supabase.auth.signOut();
+        currentUser = null;
+        localStorage.removeItem("bg_session");
+        updateNavAuthUI();
+        showScreen("landing");
+      }
+
+      /* ---------- Dashboard rendering ---------- */
+      function renderDashboard() {
+        if (!currentUser) return;
+        document.getElementById("db-name").textContent =
+          currentUser.name.split(" ")[0];
+        document.getElementById("db-balance").textContent = Number(
+          currentUser.balance || 0,
+        ).toFixed(2);
+        document.getElementById("db-app").textContent = currentUser.app || "—";
+        document.getElementById("db-tier").textContent = currentUser.tier
+          ? currentUser.tier + " Member"
+          : "No active plan";
+        document.getElementById("db-tier-expiry").textContent = currentUser.tier
+          ? "Pending confirmation from Bet Guru"
+          : "Subscribe to unlock VIP picks";
+
+        const list = document.getElementById("db-activity-list");
+        const empty = document.getElementById("db-activity-empty");
+        list.innerHTML = "";
+        const activity = currentUser.activity || [];
+        empty.classList.toggle("hidden", activity.length > 0);
+        activity.forEach((a) => {
+          const li = document.createElement("li");
+          li.className =
+            "flex items-center justify-between border-b hairline pb-2";
+          li.innerHTML = `<span>${a.type} — <span class="text-parchment/60">${a.detail}</span></span><span class="font-mono-num text-xs text-parchment/40">${a.date}</span>`;
+          list.appendChild(li);
+        });
+      }
+
+      /* ---------- Subscribe flow ---------- */
+      function selectTier(name, price) {
+        if (!currentUser) {
+          toast("Sign in first to subscribe.");
+          showScreen("signin");
+          return;
+        }
+        pendingTier = { name, price };
+        document.getElementById("pay-tier-name").textContent = name;
+        document.getElementById("pay-tier-price").textContent = price;
+        document.getElementById("modalTierStep").classList.add("hidden");
+        document.getElementById("modalPayStep").classList.remove("hidden");
+        document.getElementById("payInstructions").classList.add("hidden");
+        document.getElementById("confirmPaySentBtn").disabled = true;
+        document
+          .querySelectorAll(".pay-method-tile")
+          .forEach((b) => b.classList.remove("selected"));
+        openModal("subscribeModal");
+      }
+
+      function backToTiers() {
+        document.getElementById("modalPayStep").classList.add("hidden");
+        document.getElementById("modalTierStep").classList.remove("hidden");
+      }
+
+      function selectPayMethod(method) {
+        pendingMethod = method;
+        document.querySelectorAll(".pay-method-tile").forEach((b) => {
+          b.classList.toggle("selected", b.dataset.method === method);
+        });
+        document.getElementById("payInstructions").classList.remove("hidden");
+        document.getElementById("payInstructionsText").textContent =
+          PAY_ADDRESSES[method];
+        document.getElementById("confirmPaySentBtn").disabled = false;
+      }
+
+      async function confirmPaymentSent() {
+        if (!currentUser || !pendingTier || !pendingMethod) return;
+        await db.createSubscriptionRequest(
+          currentUser,
+          pendingTier.name,
+          pendingTier.price,
+          pendingMethod,
+        );
+        currentUser.tier = pendingTier.name;
+        await db.saveProfile(currentUser);
+        renderDashboard();
+        closeModal("subscribeModal");
+        toast(
+          `${pendingTier.name} request submitted via ${pendingMethod} — access unlocks once confirmed.`,
+        );
+        pendingTier = null;
+        pendingMethod = null;
+      }
+
+      /* ---------- Withdraw flow ---------- */
+      async function handleWithdraw(e) {
+        e.preventDefault();
+        const amount = parseFloat(document.getElementById("wd-amount").value);
+        const method = document.getElementById("wd-method").value;
+        const destination = document
+          .getElementById("wd-destination")
+          .value.trim();
+        if (!currentUser) return;
+        if (amount > Number(currentUser.balance || 0)) {
+          toast("Withdrawal exceeds available balance.");
+          return;
+        }
+        await db.createWithdrawalRequest(
+          currentUser,
+          amount.toFixed(2),
+          method,
+          destination,
+        );
+        renderDashboard();
+        closeModal("withdrawModal");
+        e.target.reset();
+        toast("Withdrawal request submitted for review.");
+      }
+
+      /* ---------- Win notification pop-up ---------- */
+      // TODO (Supabase): replace this static sample array with real, verified
+      // payout events, e.g. by fetching the latest rows from a `wins` table:
+      //   const { data } = await supabase.from('wins').select('*').order('created_at',{ascending:false}).limit(20);
+      // Only surface wins you can actually substantiate — fabricated results
+      // presented as real member outcomes is misleading advertising.
+      const SAMPLE_WINS = [
+        { user: "dmoney", amount: "1,790", platform: "FanDuel" },
+        { user: "traphouse22", amount: "640", platform: "Underdog" },
+        { user: "k.rivers", amount: "2,150", platform: "PrizePicks" },
+        { user: "sharpshooter", amount: "910", platform: "DraftKings" },
+        { user: "j.parlay", amount: "1,280", platform: "Bet365" },
+      ];
+
+      let winPopupIndex = 0;
+      let winPopupTimer = null;
+      let winPopupDismissedManually = false;
+
+      function showWinPopup() {
+        if (winPopupDismissedManually) return;
+        const w = SAMPLE_WINS[winPopupIndex % SAMPLE_WINS.length];
+        winPopupIndex++;
+        document.getElementById("winPopupText").innerHTML =
+          `<span style="color:var(--gold-bright)" class="font-semibold">${w.user}</span> just won <span class="font-mono-num" style="color:var(--gold-bright)">$${w.amount}</span> on ${w.platform}`;
+        document.getElementById("winPopupTime").textContent =
+          "moments ago · unverified sample";
+        const popup = document.getElementById("winPopup");
+        popup.classList.remove("hidden");
+        clearTimeout(window._winPopupHideTimer);
+        window._winPopupHideTimer = setTimeout(
+          () => popup.classList.add("hidden"),
+          6000,
+        );
+      }
+
+      function dismissWinPopup() {
+        document.getElementById("winPopup").classList.add("hidden");
+        winPopupDismissedManually = true;
+        clearInterval(winPopupTimer);
+      }
+      // Replace these URLs with your own hosted images (or an API endpoint)
+      const HERO_SPORT_IMAGES = [
+        "/image/2113093.jpg",
+        "/image/dynamic-basketball-dunk-stockcake.jpg",
+        "/image/slam-dunk-action-stockcake.jpg",
+      ];
+
+      let heroImgIndex = 0;
+      function rotateHeroImage() {
+        const img = document.getElementById("heroSportImg");
+        if (!img) return;
+        img.style.opacity = 0;
+        setTimeout(() => {
+          img.src = HERO_SPORT_IMAGES[heroImgIndex % HERO_SPORT_IMAGES.length];
+          heroImgIndex++;
+          img.style.opacity = 1;
+        }, 300); // matches the fade-out before swapping src
+      }
+
+      window.addEventListener("DOMContentLoaded", () => {
+        rotateHeroImage();
+        setInterval(rotateHeroImage, 60000); // every 60 seconds
+      });
+      // First pop-up shortly after load, then rotate periodically.
+      setTimeout(() => {
+        showWinPopup();
+        winPopupTimer = setInterval(showWinPopup, 12000);
+      }, 4000);
+
+      /* ---------- Restore session + theme on load ---------- */
+      window.addEventListener("DOMContentLoaded", () => {
+        if (localStorage.getItem("bg_theme") === "light") {
+          document.documentElement.classList.add("light");
+        }
+        const savedEmail = localStorage.getItem("bg_session");
+        if (savedEmail) {
+          const users = JSON.parse(localStorage.getItem("bg_users") || "{}");
+          if (users[savedEmail]) {
+            currentUser = users[savedEmail];
+            renderDashboard();
+            showScreen("dashboard");
+          }
+        }
+        updateNavAuthUI();
+      });
+    </script>
+  </body>
+</html>

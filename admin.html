@@ -1,0 +1,1531 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bet Guru — Admin</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,ital@9..144,300..900,0..1&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ink: "#0A0F0C",
+              pine: "#122A20",
+              pinelight: "#183627",
+              gold: "#C9A227",
+              goldbright: "#E7C15A",
+            },
+            fontFamily: {
+              display: ['"Fraunces"', "serif"],
+              body: ['"Inter"', "sans-serif"],
+              mono: ['"IBM Plex Mono"', "monospace"],
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      :root {
+        --ink: #0a0f0c;
+        --pine: #122a20;
+        --pine-light: #183627;
+        --gold: #c9a227;
+        --gold-bright: #e7c15a;
+        --parchment: #efe8d8;
+        --sage: #7c9a82;
+        --crimson: #b2402f;
+      }
+      html.light {
+        --ink: #f5f1e6;
+        --pine: #ffffff;
+        --pine-light: #efe8d8;
+        --parchment: #1b2620;
+      }
+      body {
+        background-color: var(--ink);
+        background-image:
+          radial-gradient(
+            circle at 15% 10%,
+            rgba(201, 162, 39, 0.06),
+            transparent 40%
+          ),
+          radial-gradient(
+            circle at 85% 90%,
+            rgba(124, 154, 130, 0.06),
+            transparent 45%
+          );
+        color: var(--parchment);
+        font-family: "Inter", sans-serif;
+        transition:
+          background-color 0.2s ease,
+          color 0.2s ease;
+      }
+      .font-display {
+        font-family: "Fraunces", serif;
+        font-feature-settings: "ss01";
+      }
+      .font-mono-num {
+        font-family: "IBM Plex Mono", monospace;
+      }
+      .hairline {
+        border-color: rgba(239, 232, 216, 0.14);
+      }
+      html.light .hairline {
+        border-color: rgba(27, 38, 32, 0.14);
+      }
+      html.light .bg-pine\/40 {
+        background-color: rgba(27, 38, 32, 0.05) !important;
+      }
+      html.light .bg-ink\/80 {
+        background-color: rgba(245, 241, 230, 0.85) !important;
+      }
+      html.light .text-parchment\/70 {
+        color: rgba(27, 38, 32, 0.7) !important;
+      }
+      html.light .text-parchment\/60 {
+        color: rgba(27, 38, 32, 0.6) !important;
+      }
+      html.light .text-parchment\/50 {
+        color: rgba(27, 38, 32, 0.5) !important;
+      }
+      html.light .text-parchment\/40 {
+        color: rgba(27, 38, 32, 0.4) !important;
+      }
+      html.light .text-parchment\/30 {
+        color: rgba(27, 38, 32, 0.3) !important;
+      }
+      html.light .input-field {
+        background: rgba(27, 38, 32, 0.04);
+        border-color: rgba(27, 38, 32, 0.18);
+        color: #1b2620;
+      }
+      html.light .input-field option {
+        color: #1b2620;
+      }
+      html.light .pay-tile {
+        border-color: rgba(27, 38, 32, 0.16);
+        background: rgba(27, 38, 32, 0.03);
+      }
+
+      .theme-toggle {
+        position: relative;
+        width: 38px;
+        height: 38px;
+        border-radius: 9999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .theme-toggle svg {
+        width: 18px;
+        height: 18px;
+      }
+      .icon-sun {
+        display: none;
+      }
+      html.light .icon-moon {
+        display: none;
+      }
+      html.light .icon-sun {
+        display: block;
+      }
+
+      .btn-gold {
+        background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+        color: #1b1a14;
+      }
+      .btn-gold:hover {
+        filter: brightness(1.06);
+      }
+      .btn-danger {
+        background: rgba(178, 64, 47, 0.15);
+        border: 1px solid var(--crimson);
+        color: var(--crimson);
+      }
+      .btn-danger:hover {
+        background: rgba(178, 64, 47, 0.25);
+      }
+
+      .input-field {
+        background: rgba(239, 232, 216, 0.05);
+        border: 1px solid rgba(239, 232, 216, 0.18);
+        color: var(--parchment);
+      }
+      .input-field:focus {
+        outline: none;
+        border-color: var(--gold);
+        box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.18);
+      }
+      .input-field option {
+        color: #1b1a14;
+      }
+
+      .pay-tile {
+        border: 1px solid rgba(239, 232, 216, 0.16);
+        background: rgba(239, 232, 216, 0.03);
+        transition: all 0.15s ease;
+      }
+
+      .tab-btn {
+        font-family: "IBM Plex Mono", monospace;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        font-size: 11px;
+        padding: 8px 14px;
+        border-radius: 6px;
+        border: 1px solid transparent;
+        color: rgba(239, 232, 216, 0.5);
+        transition: all 0.15s ease;
+        white-space: nowrap;
+      }
+      html.light .tab-btn {
+        color: rgba(27, 38, 32, 0.5);
+      }
+      .tab-btn:hover {
+        color: var(--gold-bright);
+      }
+      .tab-btn.active {
+        background: rgba(201, 162, 39, 0.1);
+        border-color: var(--gold);
+        color: var(--gold-bright);
+      }
+
+      .badge {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 3px 8px;
+        border-radius: 4px;
+        border: 1px solid;
+        white-space: nowrap;
+      }
+      .badge-pending {
+        border-color: var(--gold);
+        color: var(--gold-bright);
+      }
+      .badge-approved {
+        border-color: var(--sage);
+        color: var(--sage);
+      }
+      .badge-declined {
+        border-color: var(--crimson);
+        color: var(--crimson);
+      }
+
+      .fade-screen {
+        animation: fadeIn 0.3s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      ::selection {
+        background: var(--gold);
+        color: #1b1a14;
+      }
+      .scrollbar-none::-webkit-scrollbar {
+        display: none;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: rgba(239, 232, 216, 0.4);
+        text-align: left;
+        padding: 10px 12px;
+        white-space: nowrap;
+      }
+      html.light th {
+        color: rgba(27, 38, 32, 0.4);
+      }
+      td {
+        padding: 12px;
+        font-size: 13px;
+        vertical-align: middle;
+      }
+      tbody tr {
+        border-bottom: 1px solid rgba(239, 232, 216, 0.1);
+      }
+      html.light tbody tr {
+        border-bottom: 1px solid rgba(27, 38, 32, 0.1);
+      }
+      tbody tr:hover {
+        background: rgba(201, 162, 39, 0.04);
+      }
+    </style>
+  </head>
+
+  <body class="min-h-screen">
+    <!-- ============================================================ -->
+    <!-- ADMIN LOGIN GATE -->
+    <!-- ============================================================ -->
+    <section
+      id="screen-login"
+      class="fade-screen min-h-screen flex items-center justify-center px-4 sm:px-6"
+    >
+      <div class="w-full max-w-sm">
+        <div class="text-center mb-8">
+          <p
+            class="font-mono-num text-xs tracking-[0.3em] uppercase mb-2"
+            style="color: var(--sage)"
+          >
+            Staff only
+          </p>
+          <h1 class="font-display text-3xl sm:text-4xl">
+            <span style="color: var(--gold-bright)">Bet Guru</span> Admin
+          </h1>
+        </div>
+        <form
+          class="space-y-4 bg-pine/40 border hairline rounded-lg p-6 sm:p-8"
+          onsubmit="handleAdminLogin(event)"
+        >
+          <div>
+            <label
+              class="block text-xs uppercase tracking-wide text-parchment/60 mb-1.5"
+              >Email</label
+            >
+            <input
+              required
+              id="admin-email"
+              type="email"
+              autocomplete="username"
+              placeholder="you@example.com"
+              class="input-field w-full rounded px-3 py-2.5 text-sm"
+            />
+          </div>
+          <div>
+            <label
+              class="block text-xs uppercase tracking-wide text-parchment/60 mb-1.5"
+              >Password</label
+            >
+            <input
+              required
+              id="admin-password"
+              type="password"
+              autocomplete="current-password"
+              placeholder="••••••••"
+              class="input-field w-full rounded px-3 py-2.5 text-sm"
+            />
+          </div>
+          <button
+            id="admin-login-btn"
+            type="submit"
+            class="w-full py-3 rounded btn-gold font-semibold"
+          >
+            Sign In
+          </button>
+          <p
+            id="admin-login-error"
+            class="hidden text-center text-xs font-mono-num"
+            style="color: var(--crimson)"
+          ></p>
+          <p class="text-center text-[10px] text-parchment/40 font-mono-num">
+            Access is restricted to accounts listed in the Supabase
+            <code>admins</code> table. Ask a project owner to add you.
+          </p>
+        </form>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- ADMIN APP -->
+    <!-- ============================================================ -->
+    <div id="screen-admin" class="hidden">
+      <header
+        class="sticky top-0 z-40 backdrop-blur bg-ink/80 border-b hairline"
+      >
+        <div
+          class="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3"
+        >
+          <div class="flex items-baseline gap-2 min-w-0">
+            <span
+              class="font-display text-xl sm:text-2xl tracking-tight shrink-0"
+              style="color: var(--gold-bright)"
+              >Bet Guru</span
+            >
+            <span
+              class="hidden sm:inline font-mono-num text-[10px] tracking-[0.3em] uppercase"
+              style="color: var(--sage)"
+              >Admin</span
+            >
+          </div>
+          <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+            <button
+              onclick="toggleTheme()"
+              aria-label="Toggle theme"
+              class="theme-toggle border hairline hover:border-[var(--gold)] transition"
+            >
+              <svg
+                class="icon-moon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              </svg>
+              <svg
+                class="icon-sun"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="4" />
+                <path
+                  d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"
+                />
+              </svg>
+            </button>
+            <button
+              onclick="handleAdminLogout()"
+              class="text-xs sm:text-sm px-3 sm:px-4 py-2 rounded border hairline hover:border-[var(--gold)] transition whitespace-nowrap"
+            >
+              Sign Out
+            </button>
+          </div>
+        </div>
+        <div
+          class="max-w-7xl mx-auto px-4 sm:px-6 pb-3 flex gap-2 overflow-x-auto scrollbar-none"
+        >
+          <button
+            class="tab-btn active"
+            data-tab="overview"
+            onclick="switchTab('overview')"
+          >
+            Overview
+          </button>
+          <button class="tab-btn" data-tab="users" onclick="switchTab('users')">
+            Users
+          </button>
+          <button
+            class="tab-btn"
+            data-tab="requests"
+            onclick="switchTab('requests')"
+          >
+            Requests
+          </button>
+          <button
+            class="tab-btn"
+            data-tab="payments"
+            onclick="switchTab('payments')"
+          >
+            Payment Settings
+          </button>
+        </div>
+      </header>
+
+      <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+        <!-- ===================== OVERVIEW ===================== -->
+        <section id="tab-overview" class="fade-screen">
+          <h2 class="font-display text-2xl sm:text-3xl mb-6">Overview</h2>
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-10">
+            <div class="bg-pine/40 border hairline rounded-lg p-5">
+              <p
+                class="font-mono-num text-xs tracking-widest uppercase text-parchment/50 mb-2"
+              >
+                Total Users
+              </p>
+              <p
+                class="font-mono-num text-3xl font-semibold"
+                style="color: var(--gold-bright)"
+                id="stat-users"
+              >
+                0
+              </p>
+            </div>
+            <div class="bg-pine/40 border hairline rounded-lg p-5">
+              <p
+                class="font-mono-num text-xs tracking-widest uppercase text-parchment/50 mb-2"
+              >
+                Total Balance Owed
+              </p>
+              <p
+                class="font-mono-num text-3xl font-semibold"
+                style="color: var(--gold-bright)"
+              >
+                $<span id="stat-balance">0.00</span>
+              </p>
+            </div>
+            <div class="bg-pine/40 border hairline rounded-lg p-5">
+              <p
+                class="font-mono-num text-xs tracking-widest uppercase text-parchment/50 mb-2"
+              >
+                Pending Subs
+              </p>
+              <p
+                class="font-mono-num text-3xl font-semibold"
+                style="color: var(--sage)"
+                id="stat-pending-sub"
+              >
+                0
+              </p>
+            </div>
+            <div class="bg-pine/40 border hairline rounded-lg p-5">
+              <p
+                class="font-mono-num text-xs tracking-widest uppercase text-parchment/50 mb-2"
+              >
+                Pending Withdrawals
+              </p>
+              <p
+                class="font-mono-num text-3xl font-semibold"
+                style="color: var(--crimson)"
+                id="stat-pending-wd"
+              >
+                0
+              </p>
+            </div>
+          </div>
+
+          <h3 class="font-display text-xl mb-4">Latest requests</h3>
+          <div
+            class="bg-pine/40 border hairline rounded-lg overflow-x-auto scrollbar-none"
+          >
+            <table id="overview-requests-table">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Member</th>
+                  <th>Details</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <p
+              id="overview-requests-empty"
+              class="hidden text-sm text-parchment/50 p-6 text-center"
+            >
+              No requests yet.
+            </p>
+          </div>
+        </section>
+
+        <!-- ===================== USERS ===================== -->
+        <section id="tab-users" class="hidden fade-screen">
+          <div
+            class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6"
+          >
+            <h2 class="font-display text-2xl sm:text-3xl">Users</h2>
+            <input
+              id="user-search"
+              type="text"
+              placeholder="Search name or email…"
+              oninput="renderUsersTable()"
+              class="input-field rounded px-3 py-2 text-sm w-full sm:w-64"
+            />
+          </div>
+          <div
+            class="bg-pine/40 border hairline rounded-lg overflow-x-auto scrollbar-none"
+          >
+            <table id="users-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>App</th>
+                  <th>Tier</th>
+                  <th>Balance</th>
+                  <th>Country</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <p
+              id="users-empty"
+              class="hidden text-sm text-parchment/50 p-6 text-center"
+            >
+              No users match your search.
+            </p>
+          </div>
+        </section>
+
+        <!-- ===================== REQUESTS ===================== -->
+        <section id="tab-requests" class="hidden fade-screen">
+          <h2 class="font-display text-2xl sm:text-3xl mb-6">Requests</h2>
+          <div class="flex flex-wrap gap-2 mb-6">
+            <span
+              class="font-mono-num text-[10px] uppercase tracking-widest text-parchment/40 self-center mr-1"
+              >Status</span
+            >
+            <button
+              class="tab-btn active"
+              data-rstatus="all"
+              onclick="setReqStatusFilter('all')"
+            >
+              All
+            </button>
+            <button
+              class="tab-btn"
+              data-rstatus="pending"
+              onclick="setReqStatusFilter('pending')"
+            >
+              Pending
+            </button>
+            <button
+              class="tab-btn"
+              data-rstatus="approved"
+              onclick="setReqStatusFilter('approved')"
+            >
+              Approved
+            </button>
+            <button
+              class="tab-btn"
+              data-rstatus="declined"
+              onclick="setReqStatusFilter('declined')"
+            >
+              Declined
+            </button>
+            <span
+              class="font-mono-num text-[10px] uppercase tracking-widest text-parchment/40 self-center ml-4 mr-1"
+              >Type</span
+            >
+            <button
+              class="tab-btn active"
+              data-rtype="all"
+              onclick="setReqTypeFilter('all')"
+            >
+              All
+            </button>
+            <button
+              class="tab-btn"
+              data-rtype="subscription"
+              onclick="setReqTypeFilter('subscription')"
+            >
+              Subscriptions
+            </button>
+            <button
+              class="tab-btn"
+              data-rtype="withdrawal"
+              onclick="setReqTypeFilter('withdrawal')"
+            >
+              Withdrawals
+            </button>
+          </div>
+          <div
+            class="bg-pine/40 border hairline rounded-lg overflow-x-auto scrollbar-none"
+          >
+            <table id="requests-table">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Member</th>
+                  <th>Details</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <p
+              id="requests-empty"
+              class="hidden text-sm text-parchment/50 p-6 text-center"
+            >
+              No requests match this filter.
+            </p>
+          </div>
+        </section>
+
+        <!-- ===================== PAYMENT SETTINGS ===================== -->
+        <section id="tab-payments" class="hidden fade-screen">
+          <h2 class="font-display text-2xl sm:text-3xl mb-2">
+            Payment Settings
+          </h2>
+          <p class="text-sm text-parchment/60 mb-6 max-w-xl">
+            These are the addresses / handles members are told to send payment
+            to when they subscribe. Update them here.
+          </p>
+          <form
+            id="payments-form"
+            class="bg-pine/40 border hairline rounded-lg p-5 sm:p-8 space-y-4 max-w-xl"
+            onsubmit="savePaymentSettings(event)"
+          >
+            <div>
+              <label
+                class="block text-xs uppercase tracking-wide text-parchment/60 mb-1.5"
+                >Cash App</label
+              >
+              <input
+                id="pay-cashapp"
+                type="text"
+                class="input-field w-full rounded px-3 py-2.5 text-sm"
+              />
+            </div>
+            <div>
+              <label
+                class="block text-xs uppercase tracking-wide text-parchment/60 mb-1.5"
+                >Zelle</label
+              >
+              <input
+                id="pay-zelle"
+                type="text"
+                class="input-field w-full rounded px-3 py-2.5 text-sm"
+              />
+            </div>
+            <div>
+              <label
+                class="block text-xs uppercase tracking-wide text-parchment/60 mb-1.5"
+                >Chime</label
+              >
+              <input
+                id="pay-chime"
+                type="text"
+                class="input-field w-full rounded px-3 py-2.5 text-sm"
+              />
+            </div>
+            <div>
+              <label
+                class="block text-xs uppercase tracking-wide text-parchment/60 mb-1.5"
+                >Bitcoin</label
+              >
+              <input
+                id="pay-bitcoin"
+                type="text"
+                class="input-field w-full rounded px-3 py-2.5 text-sm"
+              />
+            </div>
+            <div>
+              <label
+                class="block text-xs uppercase tracking-wide text-parchment/60 mb-1.5"
+                >Apple Pay</label
+              >
+              <input
+                id="pay-applepay"
+                type="text"
+                class="input-field w-full rounded px-3 py-2.5 text-sm"
+              />
+            </div>
+            <button
+              type="submit"
+              class="w-full py-3 rounded btn-gold font-semibold mt-2"
+            >
+              Save Payment Settings
+            </button>
+          </form>
+
+          <h3 class="font-display text-xl mt-10 mb-4">Your Password</h3>
+          <form
+            class="bg-pine/40 border hairline rounded-lg p-5 sm:p-8 space-y-4 max-w-xl"
+            onsubmit="changeAdminPassword(event)"
+          >
+            <div>
+              <label
+                class="block text-xs uppercase tracking-wide text-parchment/60 mb-1.5"
+                >New password</label
+              >
+              <input
+                id="new-password"
+                type="password"
+                minlength="8"
+                required
+                autocomplete="new-password"
+                class="input-field w-full rounded px-3 py-2.5 text-sm"
+              />
+            </div>
+            <button
+              type="submit"
+              class="w-full py-3 rounded border hairline hover:border-[var(--gold)] transition font-semibold"
+            >
+              Update Password
+            </button>
+          </form>
+          <p class="text-xs text-parchment/40 mt-3 max-w-xl">
+            This changes the password for your own Supabase account (<span
+              id="current-admin-email"
+              class="font-mono-num"
+            ></span
+            >). To grant or revoke admin access for other people, add or remove
+            their user id from the <code>admins</code> table in the Supabase
+            dashboard — this UI intentionally can't do that, since a page
+            running in a browser is not a safe place to manage who else has
+            admin rights.
+          </p>
+        </section>
+      </main>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- EDIT USER MODAL -->
+    <!-- ============================================================ -->
+    <div
+      id="editUserModal"
+      class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm items-center justify-center p-3 sm:p-4"
+    >
+      <div
+        class="bg-ink border hairline rounded-lg w-full max-w-lg max-h-[92vh] overflow-y-auto scrollbar-none"
+      >
+        <div
+          class="p-4 sm:p-6 border-b hairline flex items-center justify-between sticky top-0 bg-ink"
+        >
+          <h3 class="font-display text-xl sm:text-2xl">Edit member</h3>
+          <button
+            onclick="closeModal('editUserModal')"
+            class="text-parchment/50 hover:text-parchment text-2xl leading-none"
+          >
+            &times;
+          </button>
+        </div>
+        <form class="p-4 sm:p-6 space-y-4" onsubmit="saveUserEdits(event)">
+          <input type="hidden" id="eu-email-key" />
+          <div>
+            <label
+              class="block text-xs uppercase tracking-wide text-parchment/60 mb-1.5"
+              >Full name</label
+            >
+            <input
+              id="eu-name"
+              type="text"
+              class="input-field w-full rounded px-3 py-2.5 text-sm"
+            />
+          </div>
+          <div>
+            <label
+              class="block text-xs uppercase tracking-wide text-parchment/60 mb-1.5"
+              >Email (read only)</label
+            >
+            <input
+              id="eu-email"
+              type="email"
+              disabled
+              class="input-field w-full rounded px-3 py-2.5 text-sm opacity-60"
+            />
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label
+                class="block text-xs uppercase tracking-wide text-parchment/60 mb-1.5"
+                >Country</label
+              >
+              <input
+                id="eu-country"
+                type="text"
+                class="input-field w-full rounded px-3 py-2.5 text-sm"
+              />
+            </div>
+            <div>
+              <label
+                class="block text-xs uppercase tracking-wide text-parchment/60 mb-1.5"
+                >Betting app</label
+              >
+              <select
+                id="eu-app"
+                class="input-field w-full rounded px-3 py-2.5 text-sm"
+              >
+                <option>FanDuel</option>
+                <option>DraftKings</option>
+                <option>Underdog</option>
+                <option>PrizePicks</option>
+                <option>BetMGM</option>
+                <option>Caesars</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label
+                class="block text-xs uppercase tracking-wide text-parchment/60 mb-1.5"
+                >Balance (USD)</label
+              >
+              <input
+                id="eu-balance"
+                type="number"
+                step="0.01"
+                class="input-field w-full rounded px-3 py-2.5 text-sm"
+              />
+            </div>
+            <div>
+              <label
+                class="block text-xs uppercase tracking-wide text-parchment/60 mb-1.5"
+                >Tier</label
+              >
+              <select
+                id="eu-tier"
+                class="input-field w-full rounded px-3 py-2.5 text-sm"
+              >
+                <option value="">No active plan</option>
+                <option>5-Day Pass</option>
+                <option>Weekly</option>
+                <option>Monthly</option>
+                <option>Lifetime</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label
+              class="block text-xs uppercase tracking-wide text-parchment/60 mb-1.5"
+              >Tier expiry (leave blank for Lifetime / none)</label
+            >
+            <input
+              id="eu-expiry"
+              type="date"
+              class="input-field w-full rounded px-3 py-2.5 text-sm"
+            />
+          </div>
+          <div class="flex gap-3 pt-2">
+            <button
+              type="submit"
+              class="flex-1 py-3 rounded btn-gold font-semibold"
+            >
+              Save Changes
+            </button>
+            <button
+              type="button"
+              onclick="deleteUser()"
+              class="px-5 py-3 rounded btn-danger font-semibold"
+            >
+              Delete
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- TOAST -->
+    <div
+      id="toast"
+      class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] bg-pinelight border hairline px-5 py-3 rounded-lg text-sm shadow-xl max-w-[92vw] text-center"
+    ></div>
+
+    <script>
+      /* ================================================================
+   BET GURU — ADMIN DASHBOARD
+
+   AUTH: Real Supabase Auth (email + password) gates this page. On top of
+   that, a signed-in user must have a row in the `admins` table before the
+   dashboard is shown — see the SQL setup at the bottom of this file's
+   accompanying README for how to create that table and its RLS policies.
+
+   NOTE ON DATA: the users/requests/payment-settings tables below still
+   read/write localStorage (bg_users, bg_pay_addresses) exactly as before.
+   That part of the app has NOT been moved to Supabase in this pass — the
+   login gate is now real, but the underlying business data still lives
+   entirely in the browser's localStorage, which anyone with dev tools on
+   that browser can read or edit directly. If this dashboard/data needs to
+   be trustworthy against a motivated user (not just casual snooping),
+   that data should move into Supabase tables protected by RLS policies
+   scoped to the `admins` table, the same way the login gate is now. Ask
+   and I can do that migration next.
+================================================================= */
+
+      // ---- Supabase project config ----
+      // Replace these with your project's values (Project Settings > API).
+      // The anon key is safe to expose in client code; it has no power on
+      // its own — Row Level Security policies in Supabase are what actually
+      // decide what a signed-in user can read or write.
+      const SUPABASE_URL = "https://asqsyzgcutxhhrraaaim.supabase.co";
+      const SUPABASE_ANON_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzcXN5emdjdXR4aGhycmFhYWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0NTEzNzMsImV4cCI6MjA5OTAyNzM3M30.U2CgIH8Kl6nk8SBs7pN_-L6rv4zxxDq-N0dA3h6orSc";
+
+      // Named "sb", not "supabase" — the CDN script already defines a
+      // global called `window.supabase` (the library namespace itself).
+      // Reusing that same name for our client risks a redeclaration error
+      // if this script block ever runs twice on the same page (e.g. a
+      // live-reload tool re-injecting it without a full page refresh).
+      const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      const DEFAULT_PAY_ADDRESSES = {
+        "Cash App": "$BetGuruVIP",
+        Zelle: "payments@betguru.example",
+        Chime: "$BetGuruVIP",
+        Bitcoin: "bc1qexampleaddressXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "Apple Pay": "payments@betguru.example",
+      };
+
+      let reqStatusFilter = "all";
+      let reqTypeFilter = "all";
+
+      /* ---------- Toast ---------- */
+      function toast(msg) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.classList.remove("hidden");
+        clearTimeout(window._toastTimer);
+        window._toastTimer = setTimeout(() => t.classList.add("hidden"), 3200);
+      }
+
+      /* ---------- Theme ---------- */
+      function toggleTheme() {
+        const isLight = document.documentElement.classList.toggle("light");
+        localStorage.setItem("bg_theme", isLight ? "light" : "dark");
+      }
+
+      /* ---------- Modal helpers ---------- */
+      function openModal(id) {
+        const m = document.getElementById(id);
+        m.classList.remove("hidden");
+        m.classList.add("flex");
+      }
+      function closeModal(id) {
+        const m = document.getElementById(id);
+        m.classList.add("hidden");
+        m.classList.remove("flex");
+      }
+
+      /* ---------- Admin auth ---------- */
+
+      // Checks whether the currently signed-in Supabase user is listed in
+      // the `admins` table. This is a defense-in-depth check on the client;
+      // the real enforcement is the RLS policies in Supabase (see README),
+      // which refuse to serve data to anyone not in that table regardless
+      // of what this JS does.
+      async function isCurrentUserAdmin() {
+        const {
+          data: { user },
+        } = await sb.auth.getUser();
+        if (!user) return false;
+        const { data, error } = await sb
+          .from("admins")
+          .select("user_id")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        if (error) {
+          console.error("Admin check failed:", error.message);
+          return false;
+        }
+        return !!data;
+      }
+
+      function showLoginScreen() {
+        document.getElementById("screen-admin").classList.add("hidden");
+        document.getElementById("screen-login").classList.remove("hidden");
+      }
+
+      async function showAdminScreen() {
+        const {
+          data: { user },
+        } = await sb.auth.getUser();
+        document.getElementById("current-admin-email").textContent =
+          user?.email || "";
+        document.getElementById("screen-login").classList.add("hidden");
+        document.getElementById("screen-admin").classList.remove("hidden");
+        refreshAll();
+      }
+
+      async function handleAdminLogin(e) {
+        e.preventDefault();
+        const email = document.getElementById("admin-email").value.trim();
+        const password = document.getElementById("admin-password").value;
+        const btn = document.getElementById("admin-login-btn");
+        const errEl = document.getElementById("admin-login-error");
+        errEl.classList.add("hidden");
+        btn.disabled = true;
+        btn.textContent = "Signing in…";
+
+        try {
+          const { data, error } = await sb.auth.signInWithPassword({
+            email,
+            password,
+          });
+
+          if (error) {
+            errEl.textContent = "Invalid email or password.";
+            errEl.classList.remove("hidden");
+            return;
+          }
+
+          const admin = await isCurrentUserAdmin();
+          if (!admin) {
+            // Valid Supabase login, but not an admin — sign them back out so
+            // no session lingers for a non-admin account on this page.
+            await sb.auth.signOut();
+            errEl.textContent =
+              "This account isn't authorized for admin access.";
+            errEl.classList.remove("hidden");
+            return;
+          }
+
+          document.getElementById("admin-password").value = "";
+          await showAdminScreen();
+        } catch (err) {
+          // Any unexpected error (e.g. a bad reference, network hiccup)
+          // now surfaces here instead of leaving the button stuck on
+          // "Signing in…" forever.
+          console.error("Login flow error:", err);
+          errEl.textContent =
+            "Something went wrong signing in. Check the console for details.";
+          errEl.classList.remove("hidden");
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "Sign In";
+        }
+      }
+
+      async function handleAdminLogout() {
+        await sb.auth.signOut();
+        showLoginScreen();
+      }
+
+      async function changeAdminPassword(e) {
+        e.preventDefault();
+        const val = document.getElementById("new-password").value;
+        const { error } = await sb.auth.updateUser({ password: val });
+        if (error) {
+          toast("Couldn't update password: " + error.message);
+          return;
+        }
+        e.target.reset();
+        toast("Password updated.");
+      }
+
+      /* ---------- Tabs ---------- */
+      function switchTab(name) {
+        ["overview", "users", "requests", "payments"].forEach((t) => {
+          document
+            .getElementById("tab-" + t)
+            .classList.toggle("hidden", t !== name);
+        });
+        document.querySelectorAll(".tab-btn[data-tab]").forEach((b) => {
+          b.classList.toggle("active", b.dataset.tab === name);
+        });
+        refreshAll();
+      }
+
+      /* ---------- Data layer (mirrors main site's localStorage schema) ---------- */
+      function loadUsers() {
+        return JSON.parse(localStorage.getItem("bg_users") || "{}");
+      }
+      function saveUsers(users) {
+        localStorage.setItem("bg_users", JSON.stringify(users));
+      }
+
+      // Adds ids/status/parsed fields to activity entries created by the
+      // member-facing site so the admin can approve/decline them.
+      function migrateUsers() {
+        const users = loadUsers();
+        let changed = false;
+        Object.values(users).forEach((u) => {
+          if (!u.activity) u.activity = [];
+          if (u.tierExpiry === undefined) {
+            u.tierExpiry = null;
+            changed = true;
+          }
+          u.activity.forEach((a) => {
+            if (!a.id) {
+              a.id = "act_" + Math.random().toString(36).slice(2, 10);
+              changed = true;
+            }
+            if (!a.status) {
+              if (/awaiting confirmation|pending review/.test(a.detail)) {
+                a.status = "pending";
+              } else {
+                a.status = "approved";
+              }
+              changed = true;
+            }
+            if (a.type === "Subscription requested" && !a.parsed) {
+              const m = a.detail.match(
+                /^(.*?) · \$(\d+(?:\.\d+)?) via (.*?) ·/,
+              );
+              if (m)
+                a.parsed = {
+                  tier: m[1],
+                  price: parseFloat(m[2]),
+                  method: m[3],
+                };
+              changed = true;
+            }
+            if (a.type === "Withdrawal requested" && !a.parsed) {
+              const m = a.detail.match(
+                /^\$(\d+(?:\.\d+)?) via (.*?) to (.*?) ·/,
+              );
+              if (m)
+                a.parsed = {
+                  amount: parseFloat(m[1]),
+                  method: m[2],
+                  destination: m[3],
+                };
+              changed = true;
+            }
+          });
+        });
+        if (changed) saveUsers(users);
+        return users;
+      }
+
+      function getAllRequests() {
+        const users = migrateUsers();
+        const reqs = [];
+        Object.values(users).forEach((u) => {
+          (u.activity || []).forEach((a) => {
+            if (
+              a.type === "Subscription requested" ||
+              a.type === "Withdrawal requested"
+            ) {
+              reqs.push({
+                ...a,
+                userEmail: u.email,
+                userName: u.name,
+                reqType:
+                  a.type === "Subscription requested"
+                    ? "subscription"
+                    : "withdrawal",
+              });
+            }
+          });
+        });
+        reqs.sort((a, b) => new Date(b.date) - new Date(a.date));
+        return reqs;
+      }
+
+      /* ---------- Overview ---------- */
+      function renderOverview() {
+        const users = migrateUsers();
+        const userList = Object.values(users);
+        document.getElementById("stat-users").textContent = userList.length;
+        const totalBalance = userList.reduce(
+          (sum, u) => sum + Number(u.balance || 0),
+          0,
+        );
+        document.getElementById("stat-balance").textContent =
+          totalBalance.toFixed(2);
+
+        const reqs = getAllRequests();
+        document.getElementById("stat-pending-sub").textContent = reqs.filter(
+          (r) => r.reqType === "subscription" && r.status === "pending",
+        ).length;
+        document.getElementById("stat-pending-wd").textContent = reqs.filter(
+          (r) => r.reqType === "withdrawal" && r.status === "pending",
+        ).length;
+
+        const tbody = document.querySelector("#overview-requests-table tbody");
+        tbody.innerHTML = "";
+        const latest = reqs.slice(0, 8);
+        document
+          .getElementById("overview-requests-empty")
+          .classList.toggle("hidden", latest.length > 0);
+        latest.forEach((r) => {
+          tbody.appendChild(requestRow(r, false));
+        });
+      }
+
+      /* ---------- Users table ---------- */
+      function renderUsersTable() {
+        const users = migrateUsers();
+        const query = (
+          document.getElementById("user-search")?.value || ""
+        ).toLowerCase();
+        const tbody = document.querySelector("#users-table tbody");
+        tbody.innerHTML = "";
+        const list = Object.values(users).filter(
+          (u) =>
+            u.name.toLowerCase().includes(query) ||
+            u.email.toLowerCase().includes(query),
+        );
+        document
+          .getElementById("users-empty")
+          .classList.toggle("hidden", list.length > 0);
+        list.forEach((u) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td class="font-display">${escapeHtml(u.name)}</td>
+            <td class="text-parchment/60">${escapeHtml(u.email)}</td>
+            <td>${escapeHtml(u.app || "—")}</td>
+            <td>${u.tier ? escapeHtml(u.tier) : '<span class="text-parchment/40">None</span>'}</td>
+            <td class="font-mono-num" style="color:var(--gold-bright)">$${Number(u.balance || 0).toFixed(2)}</td>
+            <td class="text-parchment/60">${escapeHtml(u.country || "—")}</td>
+            <td><button onclick="openEditUser('${encodeURIComponent(u.email)}')" class="text-xs px-3 py-1.5 rounded border hairline hover:border-[var(--gold)] transition whitespace-nowrap">Edit</button></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      function openEditUser(encodedEmail) {
+        const email = decodeURIComponent(encodedEmail);
+        const users = loadUsers();
+        const u = users[email];
+        if (!u) return;
+        document.getElementById("eu-email-key").value = email;
+        document.getElementById("eu-name").value = u.name || "";
+        document.getElementById("eu-email").value = u.email || "";
+        document.getElementById("eu-country").value = u.country || "";
+        document.getElementById("eu-app").value = u.app || "FanDuel";
+        document.getElementById("eu-balance").value = Number(
+          u.balance || 0,
+        ).toFixed(2);
+        document.getElementById("eu-tier").value = u.tier || "";
+        document.getElementById("eu-expiry").value = u.tierExpiry
+          ? u.tierExpiry.slice(0, 10)
+          : "";
+        openModal("editUserModal");
+      }
+
+      function saveUserEdits(e) {
+        e.preventDefault();
+        const email = document.getElementById("eu-email-key").value;
+        const users = loadUsers();
+        const u = users[email];
+        if (!u) return;
+        u.name = document.getElementById("eu-name").value.trim() || u.name;
+        u.country = document.getElementById("eu-country").value.trim();
+        u.app = document.getElementById("eu-app").value;
+        u.balance =
+          parseFloat(document.getElementById("eu-balance").value) || 0;
+        u.tier = document.getElementById("eu-tier").value || null;
+        const expiryVal = document.getElementById("eu-expiry").value;
+        u.tierExpiry = expiryVal
+          ? new Date(expiryVal).toISOString()
+          : u.tier === "Lifetime"
+            ? null
+            : u.tierExpiry;
+        saveUsers(users);
+        closeModal("editUserModal");
+        refreshAll();
+        toast("Member updated.");
+      }
+
+      function deleteUser() {
+        const email = document.getElementById("eu-email-key").value;
+        if (!email) return;
+        if (!confirm(`Delete member ${email}? This cannot be undone.`)) return;
+        const users = loadUsers();
+        delete users[email];
+        saveUsers(users);
+        closeModal("editUserModal");
+        refreshAll();
+        toast("Member deleted.");
+      }
+
+      /* ---------- Requests ---------- */
+      function setReqStatusFilter(v) {
+        reqStatusFilter = v;
+        document.querySelectorAll(".tab-btn[data-rstatus]").forEach((b) => {
+          b.classList.toggle("active", b.dataset.rstatus === v);
+        });
+        renderRequestsTable();
+      }
+      function setReqTypeFilter(v) {
+        reqTypeFilter = v;
+        document.querySelectorAll(".tab-btn[data-rtype]").forEach((b) => {
+          b.classList.toggle("active", b.dataset.rtype === v);
+        });
+        renderRequestsTable();
+      }
+
+      function requestRow(r, withActions) {
+        const tr = document.createElement("tr");
+        const typeLabel =
+          r.reqType === "subscription" ? "Subscription" : "Withdrawal";
+        const badgeClass =
+          r.status === "pending"
+            ? "badge-pending"
+            : r.status === "declined"
+              ? "badge-declined"
+              : "badge-approved";
+        let actionsHtml = "";
+        if (withActions) {
+          if (r.status === "pending") {
+            actionsHtml = `
+              <div class="flex gap-2">
+                <button onclick="approveRequest('${encodeURIComponent(r.userEmail)}','${r.id}','${r.reqType}')" class="text-xs px-3 py-1.5 rounded btn-gold font-semibold whitespace-nowrap">Approve</button>
+                <button onclick="declineRequest('${encodeURIComponent(r.userEmail)}','${r.id}')" class="text-xs px-3 py-1.5 rounded btn-danger font-semibold whitespace-nowrap">Decline</button>
+              </div>`;
+          } else {
+            actionsHtml = `<span class="text-parchment/30 text-xs">—</span>`;
+          }
+        }
+        tr.innerHTML = `
+          <td class="whitespace-nowrap">${typeLabel}</td>
+          <td>
+            <p class="font-display">${escapeHtml(r.userName)}</p>
+            <p class="text-parchment/40 text-xs">${escapeHtml(r.userEmail)}</p>
+          </td>
+          <td class="text-parchment/60 max-w-xs">${escapeHtml(r.detail)}</td>
+          <td><span class="badge ${badgeClass}">${r.status}</span></td>
+          <td class="text-parchment/40 text-xs whitespace-nowrap">${escapeHtml(r.date || "")}</td>
+          ${withActions ? `<td>${actionsHtml}</td>` : ""}
+        `;
+        return tr;
+      }
+
+      function renderRequestsTable() {
+        let reqs = getAllRequests();
+        if (reqStatusFilter !== "all")
+          reqs = reqs.filter((r) => r.status === reqStatusFilter);
+        if (reqTypeFilter !== "all")
+          reqs = reqs.filter((r) => r.reqType === reqTypeFilter);
+        const tbody = document.querySelector("#requests-table tbody");
+        tbody.innerHTML = "";
+        document
+          .getElementById("requests-empty")
+          .classList.toggle("hidden", reqs.length > 0);
+        reqs.forEach((r) => tbody.appendChild(requestRow(r, true)));
+      }
+
+      function approveRequest(encodedEmail, id, reqType) {
+        const email = decodeURIComponent(encodedEmail);
+        const users = loadUsers();
+        const u = users[email];
+        if (!u) return;
+        const a = (u.activity || []).find((x) => x.id === id);
+        if (!a || a.status !== "pending") return;
+
+        if (reqType === "subscription" && a.parsed) {
+          a.status = "approved";
+          a.detail = a.detail.replace(
+            "awaiting confirmation",
+            "approved " + new Date().toLocaleDateString(),
+          );
+          u.tier = a.parsed.tier;
+          const dayMap = {
+            "5-Day Pass": 5,
+            Weekly: 7,
+            Monthly: 30,
+            Lifetime: null,
+          };
+          const days = dayMap[a.parsed.tier];
+          u.tierExpiry = days
+            ? new Date(Date.now() + days * 86400000).toISOString()
+            : null;
+          saveUsers(users);
+          refreshAll();
+          toast(`Subscription approved for ${u.name}.`);
+        } else if (reqType === "withdrawal" && a.parsed) {
+          if (a.parsed.amount > Number(u.balance || 0)) {
+            toast("Cannot approve — amount exceeds member's current balance.");
+            return;
+          }
+          u.balance = Number(u.balance || 0) - a.parsed.amount;
+          a.status = "approved";
+          a.detail = a.detail.replace(
+            "pending review",
+            "approved " + new Date().toLocaleDateString(),
+          );
+          saveUsers(users);
+          refreshAll();
+          toast(`Withdrawal approved for ${u.name}.`);
+        }
+      }
+
+      function declineRequest(encodedEmail, id) {
+        const email = decodeURIComponent(encodedEmail);
+        const users = loadUsers();
+        const u = users[email];
+        if (!u) return;
+        const a = (u.activity || []).find((x) => x.id === id);
+        if (!a || a.status !== "pending") return;
+        a.status = "declined";
+        a.detail = a.detail
+          .replace(
+            "awaiting confirmation",
+            "declined " + new Date().toLocaleDateString(),
+          )
+          .replace(
+            "pending review",
+            "declined " + new Date().toLocaleDateString(),
+          );
+        saveUsers(users);
+        refreshAll();
+        toast(`Request declined for ${u.name}.`);
+      }
+
+      /* ---------- Payment settings ---------- */
+      function loadPayAddresses() {
+        return JSON.parse(
+          localStorage.getItem("bg_pay_addresses") ||
+            JSON.stringify(DEFAULT_PAY_ADDRESSES),
+        );
+      }
+      function renderPaymentSettings() {
+        const p = loadPayAddresses();
+        document.getElementById("pay-cashapp").value = p["Cash App"] || "";
+        document.getElementById("pay-zelle").value = p["Zelle"] || "";
+        document.getElementById("pay-chime").value = p["Chime"] || "";
+        document.getElementById("pay-bitcoin").value = p["Bitcoin"] || "";
+        document.getElementById("pay-applepay").value = p["Apple Pay"] || "";
+      }
+      function savePaymentSettings(e) {
+        e.preventDefault();
+        const p = {
+          "Cash App": document.getElementById("pay-cashapp").value.trim(),
+          Zelle: document.getElementById("pay-zelle").value.trim(),
+          Chime: document.getElementById("pay-chime").value.trim(),
+          Bitcoin: document.getElementById("pay-bitcoin").value.trim(),
+          "Apple Pay": document.getElementById("pay-applepay").value.trim(),
+        };
+        localStorage.setItem("bg_pay_addresses", JSON.stringify(p));
+        toast("Payment settings saved.");
+      }
+
+      /* ---------- Utilities ---------- */
+      function escapeHtml(str) {
+        return String(str)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;");
+      }
+
+      function refreshAll() {
+        renderOverview();
+        renderUsersTable();
+        renderRequestsTable();
+        renderPaymentSettings();
+      }
+
+      /* ---------- Boot ---------- */
+      window.addEventListener("DOMContentLoaded", async () => {
+        if (localStorage.getItem("bg_theme") === "light") {
+          document.documentElement.classList.add("light");
+        }
+
+        // On load, check for an existing Supabase session (e.g. a page
+        // refresh) and re-verify admin status before trusting it — never
+        // trust a cached "logged in" flag alone.
+        const {
+          data: { session },
+        } = await sb.auth.getSession();
+        if (session) {
+          const admin = await isCurrentUserAdmin();
+          if (admin) {
+            await showAdminScreen();
+          } else {
+            await sb.auth.signOut();
+            showLoginScreen();
+          }
+        } else {
+          showLoginScreen();
+        }
+
+        // Keep the gate honest if the session changes in another tab, or
+        // expires, while this page is open.
+        sb.auth.onAuthStateChange(async (event) => {
+          if (event === "SIGNED_OUT") {
+            showLoginScreen();
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
