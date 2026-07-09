@@ -103,7 +103,6 @@
         border-color: rgba(27, 38, 32, 0.14);
       }
 
-      /* Overrides so Tailwind's baked-in dark-theme utility colors adapt in light mode */
       html.light .bg-ink\/80 {
         background-color: rgba(245, 241, 230, 0.85) !important;
       }
@@ -152,7 +151,6 @@
         text-shadow: 0 0 18px rgba(201, 162, 39, 0.25);
       }
 
-      /* Theme toggle button */
       .theme-toggle {
         position: relative;
         width: 38px;
@@ -176,7 +174,6 @@
         display: block;
       }
 
-      /* Ticket / betting-slip card with punch-hole notches */
       .ticket {
         position: relative;
         background: linear-gradient(180deg, #fbf7ec 0%, #f1e9d3 100%);
@@ -271,7 +268,6 @@
         display: none;
       }
 
-      /* Platform badge (clickable) */
       .platform-badge {
         cursor: pointer;
         border: 1px solid transparent;
@@ -287,7 +283,6 @@
         outline: none;
       }
 
-      /* Mobile nav drawer */
       #mobileNav {
         transition:
           max-height 0.25s ease,
@@ -345,7 +340,6 @@
           >
         </a>
 
-        <!-- Desktop nav links -->
         <nav
           class="hidden lg:flex items-center gap-6 font-mono-num text-[11px] tracking-[0.15em] uppercase text-parchment/60"
         >
@@ -450,7 +444,6 @@
               Sign Out
             </button>
           </span>
-          <!-- Hamburger (mobile / tablet) -->
           <button
             id="hamburgerBtn"
             onclick="toggleMobileNav()"
@@ -467,7 +460,6 @@
         </div>
       </div>
 
-      <!-- Mobile nav drawer -->
       <div id="mobileNav" class="lg:hidden border-t hairline">
         <nav
           class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex flex-col gap-1 font-mono-num text-xs tracking-[0.15em] uppercase"
@@ -566,7 +558,6 @@
     <!-- LANDING -->
     <!-- ============================================================ -->
     <main id="screen-landing" class="fade-screen">
-      <!-- HERO -->
       <section
         class="max-w-6xl mx-auto px-4 sm:px-6 pt-10 sm:pt-16 pb-14 sm:pb-20 md:pt-24 md:pb-28 grid md:grid-cols-2 gap-10 md:gap-12 items-center"
       >
@@ -645,7 +636,6 @@
         </div>
       </section>
 
-      <!-- SUPPORTED APPS -->
       <section class="border-y hairline py-5 sm:py-6">
         <div
           class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-wrap items-center justify-center gap-x-2 sm:gap-x-4 gap-y-3 font-mono-num text-[11px] sm:text-xs uppercase tracking-[0.2em] text-parchment/50"
@@ -700,7 +690,6 @@
         </p>
       </section>
 
-      <!-- HOW IT WORKS -->
       <section
         id="how-it-works"
         class="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-20 border-b hairline"
@@ -759,7 +748,6 @@
         </div>
       </section>
 
-      <!-- VIP TIERS -->
       <section id="tiers" class="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-20">
         <div class="text-center mb-10 sm:mb-14">
           <p
@@ -954,7 +942,6 @@
           </div>
         </div>
 
-        <!-- Trust strip -->
         <div
           class="flex flex-wrap items-center justify-center gap-x-6 sm:gap-x-10 gap-y-3 mt-8 sm:mt-10 font-mono-num text-[10px] sm:text-[11px] uppercase tracking-[0.2em] text-parchment/50"
         >
@@ -982,9 +969,6 @@
         </p>
       </section>
 
-      <!-- ============================================================ -->
-      <!-- WIN RATES -->
-      <!-- ============================================================ -->
       <section id="win-rates" class="border-t hairline py-14 sm:py-20">
         <div class="max-w-6xl mx-auto px-4 sm:px-6">
           <div class="text-center mb-10 sm:mb-14">
@@ -1093,9 +1077,6 @@
         </div>
       </section>
 
-      <!-- ============================================================ -->
-      <!-- TESTIMONIALS -->
-      <!-- ============================================================ -->
       <section id="testimonials" class="border-t hairline py-14 sm:py-20">
         <div class="max-w-6xl mx-auto px-4 sm:px-6">
           <div class="text-center mb-10 sm:mb-14">
@@ -1162,9 +1143,6 @@
         </div>
       </section>
 
-      <!-- ============================================================ -->
-      <!-- FAQ -->
-      <!-- ============================================================ -->
       <section id="faq" class="border-t hairline py-14 sm:py-20">
         <div class="max-w-3xl mx-auto px-4 sm:px-6">
           <div class="text-center mb-10 sm:mb-14">
@@ -1252,9 +1230,6 @@
         </div>
       </section>
 
-      <!-- ============================================================ -->
-      <!-- FOOTER -->
-      <!-- ============================================================ -->
       <footer class="border-t hairline pt-12 sm:pt-16 pb-8">
         <div
           class="max-w-6xl mx-auto px-4 sm:px-6 grid grid-cols-2 sm:grid-cols-4 gap-8 sm:gap-10 mb-10 sm:mb-12"
@@ -1347,9 +1322,6 @@
       </footer>
     </main>
 
-    <!-- ============================================================ -->
-    <!-- SIGN UP -->
-    <!-- ============================================================ -->
     <section
       id="screen-signup"
       class="hidden fade-screen min-h-[80vh] flex items-center justify-center px-4 sm:px-6 py-12 sm:py-16"
@@ -1495,9 +1467,6 @@
       </div>
     </section>
 
-    <!-- ============================================================ -->
-    <!-- SIGN IN -->
-    <!-- ============================================================ -->
     <section
       id="screen-signin"
       class="hidden fade-screen min-h-[80vh] flex items-center justify-center px-4 sm:px-6 py-12 sm:py-16"
@@ -1562,9 +1531,6 @@
       </div>
     </section>
 
-    <!-- ============================================================ -->
-    <!-- DASHBOARD -->
-    <!-- ============================================================ -->
     <section
       id="screen-dashboard"
       class="hidden fade-screen max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-14"
@@ -1593,7 +1559,6 @@
       </div>
 
       <div class="grid md:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-10">
-        <!-- Balance -->
         <div
           class="md:col-span-2 bg-pine/40 border hairline rounded-lg p-5 sm:p-8"
         >
@@ -1624,7 +1589,6 @@
           </div>
         </div>
 
-        <!-- Membership status -->
         <div
           class="bg-pine/40 border hairline rounded-lg p-5 sm:p-8 flex flex-col justify-between"
         >
@@ -1642,8 +1606,9 @@
           <span
             class="font-mono-num text-[10px] uppercase tracking-widest px-2 py-1 rounded self-start mt-4 border"
             style="border-color: var(--sage); color: var(--sage)"
-            >Betting app: <span id="db-app">—</span></span
           >
+            Betting app: <span id="db-app">—</span>
+          </span>
         </div>
       </div>
 
@@ -1661,9 +1626,6 @@
       </div>
     </section>
 
-    <!-- ============================================================ -->
-    <!-- SUBSCRIBE MODAL (tier -> payment method) -->
-    <!-- ============================================================ -->
     <div
       id="subscribeModal"
       class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm items-center justify-center p-3 sm:p-4"
@@ -1683,7 +1645,6 @@
           </button>
         </div>
 
-        <!-- Step 1: tiers -->
         <div id="modalTierStep" class="p-4 sm:p-6 grid grid-cols-2 gap-3">
           <button
             onclick="selectTier('5-Day Pass', 60)"
@@ -1723,7 +1684,6 @@
           </button>
         </div>
 
-        <!-- Step 2: payment method -->
         <div id="modalPayStep" class="hidden p-4 sm:p-6">
           <button
             onclick="backToTiers()"
@@ -1813,9 +1773,6 @@
       </div>
     </div>
 
-    <!-- ============================================================ -->
-    <!-- WITHDRAW MODAL -->
-    <!-- ============================================================ -->
     <div
       id="withdrawModal"
       class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm items-center justify-center p-3 sm:p-4"
@@ -1894,17 +1851,11 @@
       </div>
     </div>
 
-    <!-- ============================================================ -->
-    <!-- TOAST -->
-    <!-- ============================================================ -->
     <div
       id="toast"
       class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] bg-pinelight border hairline px-5 py-3 rounded-lg text-sm shadow-xl max-w-[92vw] text-center"
     ></div>
 
-    <!-- ============================================================ -->
-    <!-- WIN NOTIFICATION POP-UP (bottom left, rotating) -->
-    <!-- ============================================================ -->
     <div
       id="winPopup"
       class="hidden fixed bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-auto z-[55] sm:max-w-xs bg-pinelight border hairline rounded-lg shadow-2xl p-4 fade-screen"
@@ -1933,39 +1884,40 @@
     </div>
 
     <script>
-      /* ================================================================
-         BET GURU — front-end logic
-         Everything below is wired to a mock `db` object using localStorage
-         so the site is fully clickable right now. Swap the marked
-         TODO sections for real Supabase calls when you connect your project.
-      ================================================================= */
-
-      /* ---------- 1. SUPABASE SETUP (uncomment + fill in when ready) ----------
-      <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-
-      const SUPABASE_URL = "https://YOUR-PROJECT.supabase.co";
-      const SUPABASE_ANON_KEY = "YOUR-ANON-KEY";
-      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      ------------------------------------------------------------------------- */
       const SUPABASE_URL = "https://asqsyzgcutxhhrraaaim.supabase.co";
       const SUPABASE_ANON_KEY =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzcXN5emdjdXR4aGhycmFhYWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0NTEzNzMsImV4cCI6MjA5OTAyNzM3M30.U2CgIH8Kl6nk8SBs7pN_-L6rv4zxxDq-N0dA3h6orSc";
 
-      let currentUser = null; // holds the signed-in profile
-      let pendingTier = null; // { name, price } chosen in the subscribe modal
-      let pendingMethod = null; // chosen payment method string
+      const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      const PAY_ADDRESSES = {
-        // TODO: replace these placeholders with your real handles/addresses,
-        // or better, fetch them from a `payment_settings` table in Supabase.
+      let currentUser = null;
+      let pendingTier = null;
+      let pendingMethod = null;
+
+      let PAY_ADDRESSES = {
         "Cash App": "$BetGuruVIP",
         Zelle: "payments@betguru.example",
         Chime: "$BetGuruVIP",
         Bitcoin: "bc1qexampleaddressXXXXXXXXXXXXXXXXXXXXXXXXXXX",
         "Apple Pay": "payments@betguru.example",
-      };
+      }; // fallback shown only if the fetch below fails
 
-      /* ---------- Screen navigation ---------- */
+      async function loadPayAddresses() {
+        const { data, error } = await sb
+          .from("payment_settings")
+          .select("*")
+          .eq("id", 1)
+          .single();
+        if (error || !data) return; // keep fallback values
+        PAY_ADDRESSES = {
+          "Cash App": data.cash_app || PAY_ADDRESSES["Cash App"],
+          Zelle: data.zelle || PAY_ADDRESSES["Zelle"],
+          Chime: data.chime || PAY_ADDRESSES["Chime"],
+          Bitcoin: data.bitcoin || PAY_ADDRESSES["Bitcoin"],
+          "Apple Pay": data.apple_pay || PAY_ADDRESSES["Apple Pay"],
+        };
+      }
+
       function showScreen(name) {
         ["landing", "signup", "signin", "dashboard"].forEach((s) => {
           document
@@ -1995,10 +1947,6 @@
         window._toastTimer = setTimeout(() => t.classList.add("hidden"), 3200);
       }
 
-      /* ---------- Header auth state ----------
-         Keeps the nav in sync with currentUser regardless of which screen
-         (landing/dashboard/etc.) is showing, so a signed-in member still
-         reads as signed in after navigating Home or anywhere else. */
       function setNavVisible(el, visible) {
         el.classList.toggle("hidden", !visible);
         el.classList.toggle("sm:inline-flex", visible);
@@ -2006,11 +1954,9 @@
 
       function updateNavAuthUI() {
         const signedIn = !!currentUser;
-
         setNavVisible(document.getElementById("navGuestButtons"), !signedIn);
         setNavVisible(document.getElementById("navUserButtons"), signedIn);
 
-        // mobile drawer buttons are already fine (hidden/flex, no static variant class)
         const mobileGuest = document.getElementById("mobileGuestButtons");
         const mobileUser = document.getElementById("mobileUserButtons");
         mobileGuest.classList.toggle("hidden", signedIn);
@@ -2036,13 +1982,11 @@
           .classList.toggle("hidden", !signedIn);
       }
 
-      /* ---------- Theme toggle (light / dark) ---------- */
       function toggleTheme() {
         const isLight = document.documentElement.classList.toggle("light");
         localStorage.setItem("bg_theme", isLight ? "light" : "dark");
       }
 
-      /* ---------- Mobile nav drawer ---------- */
       function toggleMobileNav() {
         const nav = document.getElementById("mobileNav");
         const btn = document.getElementById("hamburgerBtn");
@@ -2057,9 +2001,6 @@
         btn.setAttribute("aria-expanded", "false");
       }
 
-      /* ---------- Platform win-rate info (supported apps strip) ---------- */
-      // Pulled from the same sample track-record data shown in the
-      // "Where the picks hit" section further down the page.
       const PLATFORM_WIN_RATES = {
         FanDuel: 87,
         DraftKings: 85,
@@ -2081,9 +2022,8 @@
         }
         const card = document.getElementById("winrate-" + platform);
         const target = card || document.getElementById("win-rates");
-        if (target) {
+        if (target)
           target.scrollIntoView({ behavior: "smooth", block: "center" });
-        }
         if (card) {
           card.style.borderColor = "var(--gold)";
           card.style.boxShadow = "0 0 0 3px rgba(201,162,39,0.18)";
@@ -2094,86 +2034,77 @@
         }
       }
 
-      /* ================================================================
-         MOCK DATABASE LAYER (localStorage)
-         Each function below is written to mirror a Supabase call 1:1 —
-         see the TODO comment inside each for the real query to drop in.
-      ================================================================= */
       const db = {
         async signUp({ name, country, sex, email, app, password }) {
-          // TODO (Supabase):
-          // const { data, error } = await supabase.auth.signUp({ email, password });
-          // if (error) throw error;
-          // await supabase.from('profiles').insert({
-          //   id: data.user.id, name, country, sex, betting_app: app, balance: 0
-          // });
-          const users = JSON.parse(localStorage.getItem("bg_users") || "{}");
-          if (users[email])
-            throw new Error("An account with this email already exists.");
-          const profile = {
-            name,
-            country,
-            sex,
+          const { data, error } = await sb.auth.signUp({
             email,
-            app,
             password,
-            balance: 0,
-            tier: null,
-            tierExpiry: null,
-            activity: [],
-          };
-          users[email] = profile;
-          localStorage.setItem("bg_users", JSON.stringify(users));
+            options: { data: { name, country, sex, betting_app: app } },
+          });
+          if (error) throw error;
+
+          if (!data.session) {
+            throw new Error(
+              "Account created — check your email to confirm it, then sign in.",
+            );
+          }
+
+          const { data: profile, error: profileError } = await sb
+            .from("profiles")
+            .select("*")
+            .eq("id", data.user.id)
+            .single();
+          if (profileError || !profile) {
+            throw new Error(
+              "Account created, but your profile couldn't be loaded. Try signing in.",
+            );
+          }
           return profile;
         },
 
         async signIn({ email, password }) {
-          // TODO (Supabase):
-          // const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-          // if (error) throw error;
-          // const { data: profile } = await supabase.from('profiles').select('*').eq('id', data.user.id).single();
-          const users = JSON.parse(localStorage.getItem("bg_users") || "{}");
-          const profile = users[email];
-          if (!profile || profile.password !== password)
-            throw new Error("Invalid email or password.");
+          const { data, error } = await sb.auth.signInWithPassword({
+            email,
+            password,
+          });
+          if (error) throw new Error("Invalid email or password.");
+
+          const { data: profile, error: profileError } = await sb
+            .from("profiles")
+            .select("*")
+            .eq("id", data.user.id)
+            .single();
+          if (profileError || !profile) {
+            throw new Error("Signed in, but your profile couldn't be loaded.");
+          }
           return profile;
         },
 
-        async saveProfile(profile) {
-          // TODO (Supabase): await supabase.from('profiles').update({...}).eq('id', profile.id);
-          const users = JSON.parse(localStorage.getItem("bg_users") || "{}");
-          users[profile.email] = profile;
-          localStorage.setItem("bg_users", JSON.stringify(users));
-        },
-
         async createSubscriptionRequest(profile, tierName, price, method) {
-          // TODO (Supabase):
-          // await supabase.from('subscription_requests').insert({
-          //   user_id: profile.id, tier: tierName, amount: price, method, status: 'pending'
-          // });
-          profile.activity.unshift({
-            type: "Subscription requested",
-            detail: `${tierName} · $${price} via ${method} · awaiting confirmation`,
-            date: new Date().toLocaleString(),
+          const { error } = await sb.from("requests").insert({
+            user_id: profile.id,
+            req_type: "subscription",
+            tier: tierName,
+            amount: price,
+            method,
+            status: "pending",
           });
-          await this.saveProfile(profile);
+          if (error) throw error;
         },
 
         async createWithdrawalRequest(profile, amount, method, destination) {
-          // TODO (Supabase):
-          // await supabase.from('withdrawal_requests').insert({
-          //   user_id: profile.id, amount, method, destination, status: 'pending'
-          // });
-          profile.activity.unshift({
-            type: "Withdrawal requested",
-            detail: `$${amount} via ${method} to ${destination} · pending review`,
-            date: new Date().toLocaleString(),
+          const { error } = await sb.from("requests").insert({
+            user_id: profile.id,
+            req_type: "withdrawal",
+            amount,
+            method,
+            destination,
+            status: "pending",
           });
-          await this.saveProfile(profile);
+          if (error) throw error;
         },
       };
 
-      /* ---------- Auth handlers ---------- */
       async function handleSignUp(e) {
         e.preventDefault();
         try {
@@ -2220,23 +2151,24 @@
         }
       }
 
-      function handleSignOut() {
-        // TODO (Supabase): await supabase.auth.signOut();
+      async function handleSignOut() {
+        await sb.auth.signOut();
         currentUser = null;
         localStorage.removeItem("bg_session");
         updateNavAuthUI();
         showScreen("landing");
       }
 
-      /* ---------- Dashboard rendering ---------- */
       function renderDashboard() {
         if (!currentUser) return;
-        document.getElementById("db-name").textContent =
-          currentUser.name.split(" ")[0];
+        document.getElementById("db-name").textContent = (
+          currentUser.name || "Member"
+        ).split(" ")[0];
         document.getElementById("db-balance").textContent = Number(
           currentUser.balance || 0,
         ).toFixed(2);
-        document.getElementById("db-app").textContent = currentUser.app || "—";
+        document.getElementById("db-app").textContent =
+          currentUser.betting_app || "—";
         document.getElementById("db-tier").textContent = currentUser.tier
           ? currentUser.tier + " Member"
           : "No active plan";
@@ -2258,7 +2190,6 @@
         });
       }
 
-      /* ---------- Subscribe flow ---------- */
       function selectTier(name, price) {
         if (!currentUser) {
           toast("Sign in first to subscribe.");
@@ -2296,24 +2227,26 @@
 
       async function confirmPaymentSent() {
         if (!currentUser || !pendingTier || !pendingMethod) return;
-        await db.createSubscriptionRequest(
-          currentUser,
-          pendingTier.name,
-          pendingTier.price,
-          pendingMethod,
-        );
-        currentUser.tier = pendingTier.name;
-        await db.saveProfile(currentUser);
-        renderDashboard();
-        closeModal("subscribeModal");
-        toast(
-          `${pendingTier.name} request submitted via ${pendingMethod} — access unlocks once confirmed.`,
-        );
-        pendingTier = null;
-        pendingMethod = null;
+        try {
+          await db.createSubscriptionRequest(
+            currentUser,
+            pendingTier.name,
+            pendingTier.price,
+            pendingMethod,
+          );
+          renderDashboard();
+          closeModal("subscribeModal");
+          toast(
+            `${pendingTier.name} request submitted via ${pendingMethod} — access unlocks once confirmed.`,
+          );
+        } catch (err) {
+          toast(err.message);
+        } finally {
+          pendingTier = null;
+          pendingMethod = null;
+        }
       }
 
-      /* ---------- Withdraw flow ---------- */
       async function handleWithdraw(e) {
         e.preventDefault();
         const amount = parseFloat(document.getElementById("wd-amount").value);
@@ -2326,24 +2259,22 @@
           toast("Withdrawal exceeds available balance.");
           return;
         }
-        await db.createWithdrawalRequest(
-          currentUser,
-          amount.toFixed(2),
-          method,
-          destination,
-        );
-        renderDashboard();
-        closeModal("withdrawModal");
-        e.target.reset();
-        toast("Withdrawal request submitted for review.");
+        try {
+          await db.createWithdrawalRequest(
+            currentUser,
+            amount.toFixed(2),
+            method,
+            destination,
+          );
+          renderDashboard();
+          closeModal("withdrawModal");
+          e.target.reset();
+          toast("Withdrawal request submitted for review.");
+        } catch (err) {
+          toast(err.message);
+        }
       }
 
-      /* ---------- Win notification pop-up ---------- */
-      // TODO (Supabase): replace this static sample array with real, verified
-      // payout events, e.g. by fetching the latest rows from a `wins` table:
-      //   const { data } = await supabase.from('wins').select('*').order('created_at',{ascending:false}).limit(20);
-      // Only surface wins you can actually substantiate — fabricated results
-      // presented as real member outcomes is misleading advertising.
       const SAMPLE_WINS = [
         { user: "dmoney", amount: "1,790", platform: "FanDuel" },
         { user: "traphouse22", amount: "640", platform: "Underdog" },
@@ -2378,7 +2309,7 @@
         winPopupDismissedManually = true;
         clearInterval(winPopupTimer);
       }
-      // Replace these URLs with your own hosted images (or an API endpoint)
+
       const HERO_SPORT_IMAGES = [
         "/image/2113093.jpg",
         "/image/dynamic-basketball-dunk-stockcake.jpg",
@@ -2394,29 +2325,37 @@
           img.src = HERO_SPORT_IMAGES[heroImgIndex % HERO_SPORT_IMAGES.length];
           heroImgIndex++;
           img.style.opacity = 1;
-        }, 300); // matches the fade-out before swapping src
+        }, 300);
       }
 
       window.addEventListener("DOMContentLoaded", () => {
         rotateHeroImage();
-        setInterval(rotateHeroImage, 60000); // every 60 seconds
+        setInterval(rotateHeroImage, 60000);
       });
-      // First pop-up shortly after load, then rotate periodically.
+
       setTimeout(() => {
         showWinPopup();
         winPopupTimer = setInterval(showWinPopup, 12000);
       }, 4000);
 
-      /* ---------- Restore session + theme on load ---------- */
-      window.addEventListener("DOMContentLoaded", () => {
+      window.addEventListener("DOMContentLoaded", async () => {
+        await loadPayAddresses(); // ← new line, added here
+
         if (localStorage.getItem("bg_theme") === "light") {
           document.documentElement.classList.add("light");
         }
-        const savedEmail = localStorage.getItem("bg_session");
-        if (savedEmail) {
-          const users = JSON.parse(localStorage.getItem("bg_users") || "{}");
-          if (users[savedEmail]) {
-            currentUser = users[savedEmail];
+
+        const {
+          data: { session },
+        } = await sb.auth.getSession();
+        if (session) {
+          const { data: profile } = await sb
+            .from("profiles")
+            .select("*")
+            .eq("id", session.user.id)
+            .single();
+          if (profile) {
+            currentUser = profile;
             renderDashboard();
             showScreen("dashboard");
           }
@@ -2424,7 +2363,6 @@
         updateNavAuthUI();
       });
     </script>
-
     <!-- Smartsupp Live Chat script -->
     <script type="text/javascript">
       var _smartsupp = _smartsupp || {};
